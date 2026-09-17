@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أكاديمية رندة زربا - الصف التاسع</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+        
+        :root {
+            --primary: #8a2be2;
+            --secondary: #ff1493;
+            --accent: #00d2ff;
+            --bg-color: #0f0c29;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --success: #2ecc71;
+            --error: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--bg-color), #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: twinkle 5s infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 20px 20px;
+            width: 100%;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 95%;
+            margin: 0 auto 50px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px dashed #ddd;
+            padding-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 120px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .flip-card-front {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: var(--primary);
+            border: 2px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .flip-card-back {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .question-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
+
+        .q-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: right;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .opt-btn.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .opt-btn.wrong {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        .feedback-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 24px;
+            font-size: 1.1rem;
+        }
+
+        .motivation-banner {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            color: #d81b60;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .score-board {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div class="hero">
+        <div class="score-board" id="score-display">النقاط: 0 🌟</div>
+        <h1>✨ أكاديمية رندة زربا ✨</h1>
+        <div class="subtitle">مراجعة ذكية وسريعة - اللغة العربية (الصف التاسع)</div>
+    </div>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2>🔄 تحدي الأضداد</h2>
+            <p>اضغطي على البطاقة عشان تشوفي الكلمة وعكسها (حاولي تخمني قبل ما تضغطي!):</p>
+            <div class="grid-container" id="opposites-grid"></div>
+        </div>
+
+        <div class="card">
+            <h2>📖 تحدي المعاني</h2>
+            <p>نفس الإشي هون، خمني معنى الكلمة وبعدين اقلبي البطاقة للتأكد:</p>
+            <div class="grid-container" id="synonyms-grid"></div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 تحدي الإعراب والفهم</h2>
+            <p style="color: #666; margin-bottom: 20px;">جاوبي صح عشان تجمعي نجوم أكثر!</p>
+            
+            <div class="question-box">
+                <div class="q-title">1. ما إعراب كلمة "العرشُ" في الجملة (العرشُ يزهو)؟</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, true, 'q1')">مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q1')">فاعل مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q1')">خبر مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                </div>
+                <div id="q1-msg" class="feedback-msg"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="q-title">2. ما إعراب الفعل "يزهو"؟</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, false, 'q2')">فعل مضارع مرفوع بالضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q2')">فعل مضارع مبني على الضم</button>
+                    <button class="opt-btn" onclick="check(this, true, 'q2')">فعل مضارع مرفوع وعلامة رفعه الضمة منع من ظهورها الثقل</button>
+                </div>
+                <div id="q2-msg" class="feedback-msg"></div>
+            </div>
+            
+            <div class="question-box">
+                <div class="q-title">3. الفكرة الجزئية للأبيات (5-6) هي:</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, false, 'q3')">وصف العرش وجماله</button>
+                    <button class="opt-btn" onclick="check(this, true, 'q3')">أنوار النبوة تكسب الرسول (صلى الله عليه وسلم) رونقاً وجمالاً</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q3')">دعوة الناس للهداية</button>
+                </div>
+                <div id="q3-msg" class="feedback-msg"></div>
+            </div>
+
+            <div class="motivation-banner">
+                💡 ملاحظة ذهبية: الجملة الفعلية (يزهو) في محل رفع خبر المبتدأ (العرش).
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let score = 0;
+        
+        const opposites = [
+            { w: "بَدا", m: "اخْتَفَى" },
+            { w: "حَقّ", m: "باطِل" },
+            { w: "حَياء", m: "وَقاحَة" },
+            { w: "الهُدى", m: "الضَّلال والكُفْر" }
+        ];
+
+        const synonyms = [
+            { w: "بَدا", m: "ظَهَرَ" },
+            { w: "مُحَيّاك", m: "وَجْهك" },
+            { w: "قَسَماتُه", m: "مَلامِحُه" },
+            { w: "غُرّته", m: "مُقَدّمَة الوَجْه" },
+            { w: "رَوْنَق", m: "حُسْن وجَمال" },
+            { w: "الخَليل", m: "إبراهيم عليه السلام" }
+        ];
+
+        function renderCards(data, id) {
+            const container = document.getElementById(id);
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">${item.w}</div>
+                            <div class="flip-card-back">${item.m}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = () => {
+            renderCards(opposites, 'opposites-grid');
+            renderCards(synonyms, 'synonyms-grid');
+        };
+
+        const praises = ["كفو يا رندة! 🌟", "إجابة بتجنن! 🎯", "بطلة التاسع! 👑", "صح الصح! 👏"];
+        const tryAgain = ["بسيطة، راجعي القاعدة وجربي كمان مرة! 💪", "قربتي، ركزي شوي! 🤔"];
+
+        function check(btn, isCorrect, qId) {
+            const siblings = btn.parentElement.children;
+            for (let s of siblings) {
+                s.disabled = true;
+                if (s !== btn) s.style.opacity = '0.5';
+            }
+
+            const msg = document.getElementById(`${qId}-msg`);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                msg.style.color = 'var(--success)';
+                msg.innerText = praises[Math.floor(Math.random() * praises.length)];
+                score += 10;
+                document.getElementById('score-display').innerText = `النقاط: ${score} 🌟`;
+                
+                btn.style.transform = 'scale(1.05)';
+                setTimeout(() => btn.style.transform = 'scale(1)', 200);
+                
+            } else {
+                btn.classList.add('wrong');
+                msg.style.color = 'var(--error)';
+                msg.innerText = tryAgain[Math.floor(Math.random() * tryAgain.length)];
+                
+                for (let s of siblings) {
+                    if (s.getAttribute('onclick').includes('true')) {
+                        s.classList.add('correct');
+                        s.style.opacity = '1';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
