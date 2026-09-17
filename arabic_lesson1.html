@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- أكواد منع الكاش -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>منصة رندة زربا - مدرسة الدوحة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --accent: #ffd700;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2b2b2b;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* تصميم الهيدر الفخم */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 100%;
+            padding: 40px 20px 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .school-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 95%;
+            margin: 0 auto 50px;
+        }
+
+        /* تصميم الكروت */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--secondary);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '📚';
+            font-size: 1.8rem;
+        }
+
+        /* الفلاش كاردز */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 100px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .flip-card-front {
+            background: #f8f9fa;
+            color: var(--primary);
+            border: 2px solid #e9ecef;
+        }
+
+        .flip-card-back {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* الأسئلة (الكويز) */
+        .q-box {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .q-box:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .q-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: right;
+            transition: all 0.2s;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            border-color: var(--secondary);
+            background: #f8faff;
+        }
+
+        .opt-btn.correct {
+            background: #d1e7dd;
+            color: #0f5132;
+            border-color: #badbcc;
+        }
+
+        .opt-btn.wrong {
+            background: #f8d7da;
+            color: #842029;
+            border-color: #f5c2c7;
+        }
+
+        .feedback-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 24px;
+            font-size: 1rem;
+        }
+        
+        .score-board {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--accent);
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- سكربت حل مشكلة الكاش جذرياً (Versioning) -->
+    <script>
+        // رقم الإصدار: غير هاد الرقم مستقبلاً لأي تحديث جديد ورح يجبر جهازها يمسح الكاش
+        const APP_VERSION = "1.0"; 
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('v') !== APP_VERSION) {
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + APP_VERSION;
+            window.location.replace(newUrl);
+        }
+    </script>
+
+    <div style="padding:10px; text-align:right;"><a href="index.html" style="color:#4e54c8; text-decoration:none; font-weight:bold;">🏠 رجوع للمواد</a></div><div class="header">
+        <div class="score-board" id="score-display">النقاط: 0 ⭐</div>
+        <div class="school-badge">🏫 مدرسة الدوحة - كفر عقب</div>
+        <h1>منصة الطالبة: رندة زربا</h1>
+        <p>الصف التاسع | مراجعة تفاعلية - لغة عربية</p>
+    </div>
+
+    <div class="container">
+        
+        <!-- قسم الأضداد -->
+        <div class="section-card">
+            <h2>تحدي الأضداد</h2>
+            <p class="text-muted">اضغطي على البطاقة لاكتشاف عكس الكلمة:</p>
+            <div class="grid-container" id="opposites-grid"></div>
+        </div>
+
+        <!-- قسم المترادفات -->
+        <div class="section-card">
+            <h2 style="--primary: #ff6b6b;"><span style="display:none;"></span>💡 تحدي المعاني</h2>
+            <p class="text-muted">خمني معنى الكلمة ثم اقلبي البطاقة للتأكد:</p>
+            <div class="grid-container" id="synonyms-grid"></div>
+        </div>
+
+        <!-- تحدي الإعراب -->
+        <div class="section-card">
+            <h2 style="--primary: #20c997;"><span style="display:none;"></span>🎯 تحدي الإعراب والفهم</h2>
+            
+            <div class="q-box">
+                <div class="q-title">1. ما إعراب كلمة "العرشُ" في الجملة (العرشُ يزهو)؟</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, true, 'q1')">مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q1')">فاعل مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q1')">خبر مرفوع وعلامة رفعه الضمة الظاهرة</button>
+                </div>
+                <div id="q1-msg" class="feedback-msg"></div>
+            </div>
+
+            <div class="q-box">
+                <div class="q-title">2. ما إعراب الفعل "يزهو"؟</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, false, 'q2')">فعل مضارع مرفوع بالضمة الظاهرة</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q2')">فعل مضارع مبني على الضم</button>
+                    <button class="opt-btn" onclick="check(this, true, 'q2')">فعل مضارع مرفوع وعلامة رفعه الضمة منع من ظهورها الثقل</button>
+                </div>
+                <div id="q2-msg" class="feedback-msg"></div>
+            </div>
+            
+            <div class="q-box">
+                <div class="q-title">3. الفكرة الجزئية للأبيات (5-6) هي:</div>
+                <div class="options-grid">
+                    <button class="opt-btn" onclick="check(this, false, 'q3')">وصف العرش وجماله</button>
+                    <button class="opt-btn" onclick="check(this, true, 'q3')">أنوار النبوة تكسب الرسول (صلى الله عليه وسلم) رونقاً وجمالاً</button>
+                    <button class="opt-btn" onclick="check(this, false, 'q3')">دعوة الناس للهداية</button>
+                </div>
+                <div id="q3-msg" class="feedback-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        
+        const opposites = [
+            { w: "بَدا", m: "اخْتَفَى" },
+            { w: "حَقّ", m: "باطِل" },
+            { w: "حَياء", m: "وَقاحَة" },
+            { w: "الهُدى", m: "الضَّلال والكُفْر" }
+        ];
+
+        const synonyms = [
+            { w: "بَدا", m: "ظَهَرَ" },
+            { w: "مُحَيّاك", m: "وَجْهك" },
+            { w: "قَسَماتُه", m: "مَلامِحُه" },
+            { w: "غُرّته", m: "مُقَدّمَة الوَجْه" },
+            { w: "رَوْنَق", m: "حُسْن وجَمال" },
+            { w: "الخَليل", m: "إبراهيم عليه السلام" }
+        ];
+
+        function renderCards(data, id) {
+            const container = document.getElementById(id);
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">${item.w}</div>
+                            <div class="flip-card-back">${item.m}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = () => {
+            renderCards(opposites, 'opposites-grid');
+            renderCards(synonyms, 'synonyms-grid');
+        };
+
+        const praises = ["ممتازة يا رندة! 🌟", "إجابة دقيقة! 🎯", "بطلة الدوحة! 👑", "رائعة جداً! 👏"];
+        const tryAgain = ["ركزي شوي وحاولي كمان مرة! 💪", "راجعي التلخيص وجربي ثانية! 🤔"];
+
+        function check(btn, isCorrect, qId) {
+            const siblings = btn.parentElement.children;
+            for (let s of siblings) {
+                s.disabled = true;
+                if (s !== btn) s.style.opacity = '0.5';
+            }
+
+            const msg = document.getElementById(`${qId}-msg`);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                msg.style.color = '#0f5132';
+                msg.innerText = praises[Math.floor(Math.random() * praises.length)];
+                score += 10;
+                document.getElementById('score-display').innerText = `النقاط: ${score} ⭐`;
+            } else {
+                btn.classList.add('wrong');
+                msg.style.color = '#842029';
+                msg.innerText = tryAgain[Math.floor(Math.random() * tryAgain.length)];
+                
+                for (let s of siblings) {
+                    if (s.getAttribute('onclick').includes('true')) {
+                        s.classList.add('correct');
+                        s.style.opacity = '1';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
