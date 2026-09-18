@@ -138,14 +138,15 @@
         <div style="margin-top: 20px; color: #fff; font-size: 1.3rem; font-weight: bold;">هلا يا قمر.. كيف الصورة حلوة صح؟ 😜😂</div>
     </div>
 
-    <!-- نافذة الإعدادات -->
+    <!-- نافذة الإعدادات مع فحص مباشر لمفتاح API -->
     <div id="settingsModal" class="modal" onclick="if(event.target==this) closeModal('settingsModal')">
-        <div class="glass-box" style="max-width: 400px; text-align: center;">
+        <div class="glass-box" style="max-width: 420px; text-align: center;">
             <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
             <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-key"></i> إعدادات VIP</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي لتشغيل المحرك التلقائي.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم التحقق منه وتفعيله مباشرة.</p>
             <input type="password" id="apiKeyInput" style="width: 90%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;" placeholder="AIzaSy...">
-            <button class="vip-btn" style="width: 100%;" onclick="saveApiKey()">حفظ وتفعيل القوة ⚡</button>
+            <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKey()">فحص وحفظ وتفعيل القوة ⚡</button>
+            <div id="keyStatusNote" style="font-size: 0.85rem; margin-top: 10px; color: var(--gold);"></div>
         </div>
     </div>
 
@@ -158,10 +159,9 @@
     </div>
 
     <script>
-        const MODEL_NAME = 'gemini-3.6-flash';
+        const MODEL_NAME = 'gemini-2.5-flash';
         let currentOpenLessonText = "";
 
-        // الأساس المبرمج الأول المعتمد لدرس العرش يزهو بشرح أكاديمي دقيق
         const defaultLessons = {
             arabic: [
                 {
@@ -304,15 +304,21 @@
 🟡 [كمين امتحاني / فكرة دقيقة]: يركز على نقطة يسهو عنها الطلاب مع كشف طريقة الإجابة الصحيحة.
 🟢 [سؤال مباشر ومضمون]: يختبر الحقائق والمفاهيم الأساسية.
 
-التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم كود.`;
+التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم markdown.`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
                 const data = await res.json();
+                if (data.error) {
+                    throw new Error(data.error.message || 'خطأ غير معروف في مفتاح API');
+                }
+                if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                    throw new Error('لم تصل استجابة واضحة من النموذج، يرجى إعادة المحاولة.');
+                }
                 document.getElementById('radarResultBody').innerHTML = data.candidates[0].content.parts[0].text;
                 hideLoading();
                 openModal('radarModal');
@@ -334,7 +340,7 @@
 
         document.getElementById('cameraInput').addEventListener('change', async (e) => {
             const file = e.target.files && e.target.files[0];
-            if (!file) return; // حماية كاملة ضد الإلغاء ومنع إنشاء أي درس وهمي
+            if (!file) return;
 
             const apiKey = localStorage.getItem('randa_gemini_key');
             showLoading('🛰️ جارٍ استخراج خط اليد وتحليله أكاديمياً وإنشاء الأسئلة...');
@@ -355,7 +361,11 @@
 
                     const prompt = `أنت معلم خبير في المنهاج الفلسطيني ومساعد دراسي ذكي للطالبة رندة (الصف التاسع).
 اقرأ صورة الدفتر المكتوبة بخط اليد بدقة واستخرج محتواها التعليمي كاملاً.
-ممنوع الاختصار المخل! إذا كانت المادة لغة عربية، استخرج: الفكرة العامة، معاني الكلمات بالجدول، الصور الفنية، وأهم القواعد. وإذا كانت علوماً أو رياضيات استخرج القوانين، الشرح التفصيلي، والأمثلة المحلولة.
+ملاحظة تصنيف المواد:
+- دروس التاريخ والجغرافيا والتربية الوطنية تصنف دائماً كـ "social" (الاجتماعيات).
+- دروس اللغة العربية والقواعد والنصوص تصنف "arabic".
+- دروس الأحياء والفيزياء والكيمياء تصنف "science".
+- دروس الجبر والهندسة تصنف "math".
 
 صغ المخرجات بصيغة JSON خام فقط دون أي كود Markdown (\`\`\`json أو \`\`\`):
 {
@@ -370,12 +380,14 @@
 }`;
 
                     try {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }] })
                         });
                         const data = await res.json();
+                        if (data.error) throw new Error(data.error.message);
+
                         let raw = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
                         const parsed = JSON.parse(raw);
 
@@ -405,12 +417,40 @@
             e.target.value = '';
         });
 
-        function saveApiKey() {
+        // دالة حفظ وفحص المفتاح المباشر
+        async function saveApiKey() {
             const key = document.getElementById('apiKeyInput').value.trim();
             if(!key) return alert('الرجاء إدخال المفتاح أولاً!');
-            localStorage.setItem('randa_gemini_key', key);
-            alert('تم حفظ المفتاح بنجاح! ⚡');
-            closeModal('settingsModal');
+            
+            const btn = document.getElementById('saveKeyBtn');
+            const note = document.getElementById('keyStatusNote');
+            btn.innerText = 'جارٍ فحص المفتاح مع خوادم جوجل... ⏳';
+            btn.disabled = true;
+            note.innerText = '';
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: 'اختبار الاتصال السريع' }] }] })
+                });
+                const data = await res.json();
+                if(data.error) {
+                    throw new Error(data.error.message);
+                }
+                localStorage.setItem('randa_gemini_key', key);
+                note.style.color = '#4ade80';
+                note.innerText = '🟢 المفتاح يعمل بنجاح 100%! تم الحفظ.';
+                alert('🟢 تم فحص المفتاح وهو صالح ومفعل بنجاح! تم حفظه في المنصة.');
+                closeModal('settingsModal');
+            } catch(err) {
+                note.style.color = '#f87171';
+                note.innerText = '🔴 خطأ في المفتاح: ' + err.message;
+                alert('❌ المفتاح لا يعمل!\nسبب الخطأ من جوجل: ' + err.message);
+            } finally {
+                btn.innerText = 'فحص وحفظ وتفعيل القوة ⚡';
+                btn.disabled = false;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
