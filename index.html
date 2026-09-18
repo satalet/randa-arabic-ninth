@@ -121,7 +121,6 @@
 
         <div class="control-panel">
             <button class="vip-btn" onclick="triggerScan()"><i class="fa-solid fa-microchip"></i> رقمنة الدفتر</button>
-            <button class="vip-btn" onclick="launchRadar()"><i class="fa-solid fa-crosshairs"></i> رادار التوقعات</button>
             <button class="vip-btn" onclick="alert('سيتم تفعيل الحماية قريباً! 🛡️')"><i class="fa-solid fa-user-secret"></i> الحماية الملكية</button>
             <button class="vip-btn" onclick="openModal('settingsModal')"><i class="fa-solid fa-gear"></i> إعدادات VIP</button>
         </div>
@@ -207,7 +206,6 @@
         }
 
         // 2. ميزة رادار التوقعات
-        async function launchRadar() {
             const apiKey = localStorage.getItem('randa_gemini_key');
             if(!apiKey) { openModal('settingsModal'); return alert('الرجاء تفعيل المفتاح أولاً!'); }
             
