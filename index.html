@@ -325,6 +325,63 @@
             document.getElementById('broadcastDate').innerText = anno.date ? `📢 ${anno.date}` : "";
         }
 
+        /* إدارة المودالات والتحكم بحركة التاريخ وزر الرجوع بالهاتف */
+        function showModalDOM(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('show');
+        }
+
+        function hideModalDOM(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('show');
+        }
+
+        function hideAllModalsDOM() {
+            document.querySelectorAll('.modal').forEach(m => {
+                if (m.id !== 'loadingModal') m.classList.remove('show');
+            });
+        }
+
+        function openModal(id, fromHistory = false) {
+            if (!fromHistory) {
+                history.pushState({ step: 'modal', modalId: id }, "");
+            }
+            showModalDOM(id);
+        }
+
+        function closeModal(id) {
+            if (history.state && history.state.step && history.state.step !== 'home') {
+                history.back();
+            } else {
+                hideModalDOM(id);
+            }
+        }
+
+        // مستمع زر الرجوع بالهاتف (Hardware / Swipe Back Button)
+        window.addEventListener('popstate', (e) => {
+            const state = e.state;
+            hideAllModalsDOM();
+
+            if (!state || state.step === 'home') {
+                // العودة للقائمة الرئيسية (إغلاق كل النوافذ والأدراج)
+                return;
+            }
+
+            if (state.step === 'subject') {
+                // الرجوع لفهرس دروس المادة
+                openSubjectDrawer(state.subKey, true);
+            } else if (state.step === 'lesson') {
+                // فتح الدرس
+                openLessonViewer(state.subKey, state.lessonId, true);
+            } else if (state.step === 'modal') {
+                // إعادة فتح النافذة المنبثقة
+                showModalDOM(state.modalId);
+            }
+        });
+
+        function showLoading(msg) { document.getElementById('loadingText').innerText = msg; showModalDOM('loadingModal'); }
+        function hideLoading() { hideModalDOM('loadingModal'); }
+
         function triggerEditBroadcast() {
             if (!checkPin("نشر تنبيه أو ملاحظة عامة للطالبات")) return;
             const db = getDB();
@@ -378,19 +435,6 @@
             }
         }
 
-        function openModal(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.add('show'); 
-        }
-
-        function closeModal(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.remove('show'); 
-        }
-
-        function showLoading(msg) { document.getElementById('loadingText').innerText = msg; openModal('loadingModal'); }
-        function hideLoading() { closeModal('loadingModal'); }
-
         function updateCounters() {
             const db = getDB();
             document.getElementById('sub_count_arabic').innerText = `${db.arabic?.length || 0} درس متوفر`;
@@ -401,7 +445,7 @@
 
         const subjectNames = { arabic: 'اللغة العربية', science: 'العلوم العامة', math: 'الرياضيات', social: 'الدراسات الاجتماعية' };
 
-        function openSubjectDrawer(subKey) {
+        function openSubjectDrawer(subKey, fromHistory = false) {
             currentActiveSub = subKey;
             const db = getDB();
             const list = db[subKey] || [];
@@ -424,7 +468,11 @@
                     </div>
                 `).join('');
             }
-            openModal('subjectModal');
+
+            if (!fromHistory) {
+                history.pushState({ step: 'subject', subKey: subKey }, "");
+            }
+            showModalDOM('subjectModal');
         }
 
         async function triggerDeleteLesson(subKey, lessonId) {
@@ -433,7 +481,7 @@
             const db = getDB();
             db[subKey] = db[subKey].filter(x => x.id !== lessonId);
             await saveDB(db, true);
-            openSubjectDrawer(subKey);
+            openSubjectDrawer(subKey, true);
             alert("🗑️ تم حذف الدرس ومزامنته مع السحابة!");
         }
 
@@ -466,11 +514,11 @@
             await saveDB(db, true);
 
             closeModal('editLessonModal');
-            openSubjectDrawer(editingSubKey);
+            openSubjectDrawer(editingSubKey, true);
             alert("✨ تم حفظ وتحديث بيانات الدرس سحابياً بنجاح!");
         }
 
-        function openLessonViewer(subKey, lessonId) {
+        function openLessonViewer(subKey, lessonId, fromHistory = false) {
             currentActiveSub = subKey;
             currentActiveLessonId = lessonId;
 
@@ -499,8 +547,11 @@
 
             renderSavedRadar(lesson);
             
-            closeModal('subjectModal');
-            openModal('lessonViewerModal');
+            hideModalDOM('subjectModal');
+            if (!fromHistory) {
+                history.pushState({ step: 'lesson', subKey: subKey, lessonId: lessonId }, "");
+            }
+            showModalDOM('lessonViewerModal');
         }
 
         function renderSavedRadar(lesson) {
@@ -710,6 +761,9 @@ ${existingQuestions}
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // تثبيت حالة الصفحة الرئيسية لمنع الخروج المفاجئ
+            history.replaceState({ step: 'home' }, "");
+
             const saved = localStorage.getItem('randa_gemini_key');
             if(saved) document.getElementById('apiKeyInput').value = saved;
             
