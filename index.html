@@ -138,7 +138,7 @@
         <div style="margin-top: 20px; color: #fff; font-size: 1.3rem; font-weight: bold;">هلا يا قمر.. كيف الصورة حلوة صح؟ 😜😂</div>
     </div>
 
-    <!-- نافذة الإعدادات مع فحص مباشر لمفتاح API -->
+    <!-- نافذة الإعدادات -->
     <div id="settingsModal" class="modal" onclick="if(event.target==this) closeModal('settingsModal')">
         <div class="glass-box" style="max-width: 420px; text-align: center;">
             <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        const MODEL_NAME = 'gemini-3.6-flash';
+        const MODELS_PRIORITY = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
         let currentOpenLessonText = "";
 
         const defaultLessons = {
@@ -289,6 +289,31 @@
             }
         }
 
+        // محرك استدعاء ذكي مع التبديل التلقائي عند الضغط
+        async function fetchGeminiWithFallback(apiKey, contentsPayload) {
+            let lastError = null;
+            for (const model of MODELS_PRIORITY) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: contentsPayload })
+                    });
+                    const data = await res.json();
+                    if (data.error) {
+                        lastError = new Error(data.error.message || `خطأ في ${model}`);
+                        continue; // تجربة النموذج البديل فوراً
+                    }
+                    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                } catch(e) {
+                    lastError = e;
+                }
+            }
+            throw lastError || new Error('تعذر الوصول إلى خدمات الذكاء الاصطناعي حالياً، يرجى المحاولة بعد قليل.');
+        }
+
         async function launchViewerRadar() {
             const apiKey = localStorage.getItem('randa_gemini_key');
             if(!apiKey) return alert('يرجى حفظ المفتاح من الإعدادات أولاً!');
@@ -307,19 +332,8 @@
 التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم markdown.`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const data = await res.json();
-                if (data.error) {
-                    throw new Error(data.error.message || 'خطأ غير معروف في مفتاح API');
-                }
-                if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-                    throw new Error('لم تصل استجابة واضحة من النموذج، يرجى إعادة المحاولة.');
-                }
-                document.getElementById('radarResultBody').innerHTML = data.candidates[0].content.parts[0].text;
+                const text = await fetchGeminiWithFallback(apiKey, [{ parts: [{ text: prompt }] }]);
+                document.getElementById('radarResultBody').innerHTML = text;
                 hideLoading();
                 openModal('radarModal');
             } catch(e) {
@@ -380,15 +394,8 @@
 }`;
 
                     try {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }] })
-                        });
-                        const data = await res.json();
-                        if (data.error) throw new Error(data.error.message);
-
-                        let raw = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const rawText = await fetchGeminiWithFallback(apiKey, [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }]);
+                        let raw = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
                         const parsed = JSON.parse(raw);
 
                         const db = getDB();
@@ -417,27 +424,18 @@
             e.target.value = '';
         });
 
-        // دالة حفظ وفحص المفتاح المباشر
         async function saveApiKey() {
             const key = document.getElementById('apiKeyInput').value.trim();
             if(!key) return alert('الرجاء إدخال المفتاح أولاً!');
             
             const btn = document.getElementById('saveKeyBtn');
             const note = document.getElementById('keyStatusNote');
-            btn.innerText = 'جارٍ فحص المفتاح مع خوادم جوجل... ⏳';
+            btn.innerText = 'جارٍ فحص المفتاح... ⏳';
             btn.disabled = true;
             note.innerText = '';
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: 'اختبار الاتصال السريع' }] }] })
-                });
-                const data = await res.json();
-                if(data.error) {
-                    throw new Error(data.error.message);
-                }
+                await fetchGeminiWithFallback(key, [{ parts: [{ text: 'اختبار الاتصال السريع' }] }]);
                 localStorage.setItem('randa_gemini_key', key);
                 note.style.color = '#4ade80';
                 note.innerText = '🟢 المفتاح يعمل بنجاح 100%! تم الحفظ.';
@@ -446,7 +444,7 @@
             } catch(err) {
                 note.style.color = '#f87171';
                 note.innerText = '🔴 خطأ في المفتاح: ' + err.message;
-                alert('❌ المفتاح لا يعمل!\nسبب الخطأ من جوجل: ' + err.message);
+                alert('❌ المفتاح لا يعمل!\nسبب الخطأ: ' + err.message);
             } finally {
                 btn.innerText = 'فحص وحفظ وتفعيل القوة ⚡';
                 btn.disabled = false;
