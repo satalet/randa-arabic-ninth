@@ -45,17 +45,26 @@
         .loader { border: 4px solid rgba(251, 191, 36, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .lesson-item-btn { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: #fff; margin-bottom: 10px; text-align: right; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: 'Tajawal'; }
-        .lesson-item-btn:hover { border-color: var(--gold); background: rgba(251,191,36,0.1); }
+        /* حاوية عناصر قائمة الدروس وأزرار الإدارة */
+        .lesson-row-card { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; transition: 0.2s; box-sizing: border-box; }
+        .lesson-row-card:hover { border-color: rgba(251,191,36,0.5); background: rgba(255,255,255,0.08); }
+        .lesson-info-click { flex: 1; cursor: pointer; text-align: right; }
+        .lesson-actions-group { display: flex; gap: 8px; margin-right: 12px; }
+        .mini-act-btn { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-muted); border-radius: 8px; padding: 7px 11px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .mini-act-btn.edit:hover { color: var(--gold); border-color: var(--gold); background: rgba(251,191,36,0.15); }
+        .mini-act-btn.delete:hover { color: #f87171; border-color: #ef4444; background: rgba(239,68,68,0.15); }
+
         .quiz-card { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-top: 15px; }
         .opt-btn { display: block; width: 100%; text-align: right; background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; margin-top: 6px; cursor: pointer; font-family: 'Tajawal'; }
         .opt-btn.correct { background: #16a34a !important; border-color: #22c55e; }
         .opt-btn.wrong { background: #dc2626 !important; border-color: #ef4444; }
         .radar-top-btn { background: var(--gold); color: #000; border: none; padding: 8px 16px; border-radius: 10px; font-weight: bold; font-family: 'Tajawal'; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 
-        /* صندوق أسئلة الرادار المحفوظة داخل الدرس */
         .radar-saved-box { margin-top: 25px; background: rgba(251, 191, 36, 0.05); border: 1.5px dashed var(--gold); border-radius: 15px; padding: 18px; text-align: right; }
         .radar-saved-title { color: var(--gold); font-size: 1.15rem; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        
+        .edit-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; margin-bottom: 12px; box-sizing: border-box; }
+        .edit-textarea { width: 100%; height: 180px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; line-height: 1.6; resize: vertical; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -73,7 +82,7 @@
         <div class="control-panel">
             <button class="vip-btn" onclick="triggerScan()"><i class="fa-solid fa-camera"></i> رقمنة الدفتر (مسح ذكي)</button>
             <button class="vip-btn" onclick="openModal('settingsModal')"><i class="fa-solid fa-gear"></i> إعدادات VIP</button>
-            <button class="vip-btn" onclick="resetDatabase()"><i class="fa-solid fa-rotate-left"></i> تنظيف وإعادة ضبط</button>
+            <button class="vip-btn" onclick="resetDatabase()"><i class="fa-solid fa-lock"></i> تنظيف السجل (محمي)</button>
         </div>
 
         <div class="section-title"><span>📚</span> مكتبة المواد الدراسية</div>
@@ -121,11 +130,9 @@
             <div id="viewLessonDate" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;"></div>
             <div id="viewLessonBody" style="line-height: 1.9; font-size: 1.1rem; text-align: right; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;"></div>
             
-            <!-- قسم تحدي الأسئلة الأساسية -->
             <h3 style="color: var(--gold); margin-top: 25px;"><i class="fa-solid fa-circle-question"></i> تحدي الأسئلة التفاعلي</h3>
             <div id="viewLessonQuiz"></div>
 
-            <!-- قسم أسئلة الرادار المحفوظة والتراكمية -->
             <div id="savedRadarSection" class="radar-saved-box" style="display: none;">
                 <div class="radar-saved-title">
                     <span><i class="fa-solid fa-crosshairs"></i> بنك توقعات الرادار الوزارية المعتمدة:</span>
@@ -133,6 +140,22 @@
                 </div>
                 <div id="savedRadarContent" style="line-height: 1.8; font-size: 1rem; color: #f1f5f9;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل الدرس المحمية -->
+    <div id="editLessonModal" class="modal" onclick="if(event.target==this) closeModal('editLessonModal')">
+        <div class="glass-box" style="max-width: 550px;">
+            <span class="close-btn" onclick="closeModal('editLessonModal')">&times;</span>
+            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات الدرس</h2>
+            
+            <label style="display: block; text-align: right; margin-bottom: 5px; font-size: 0.9rem; color: var(--gold);">عنوان الدرس:</label>
+            <input type="text" id="editLessonTitleInput" class="edit-input">
+
+            <label style="display: block; text-align: right; margin-bottom: 5px; font-size: 0.9rem; color: var(--gold);">محتوى الشرح:</label>
+            <textarea id="editLessonContentInput" class="edit-textarea"></textarea>
+
+            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveEditedLesson()"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات 💾</button>
         </div>
     </div>
 
@@ -153,10 +176,9 @@
         <div class="glass-box" style="max-width: 420px; text-align: center;">
             <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
             <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-key"></i> إعدادات VIP</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم التحقق منه وتفعيله مباشرة.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه واستخدامه في المنصة.</p>
             <input type="password" id="apiKeyInput" style="width: 90%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;" placeholder="AIzaSy...">
-            <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKey()">فحص وحفظ وتفعيل القوة ⚡</button>
-            <div id="keyStatusNote" style="font-size: 0.85rem; margin-top: 10px; color: var(--gold);"></div>
+            <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKeyDirect()">حفظ المفتاح وتفعيل القوة ⚡</button>
         </div>
     </div>
 
@@ -169,9 +191,13 @@
     </div>
 
     <script>
+        const ADMIN_PIN = "1822012";
         let currentActiveSub = '';
         let currentActiveLessonId = null;
         let currentOpenLessonText = "";
+        
+        let editingSubKey = '';
+        let editingLessonId = null;
 
         const defaultLessons = {
             arabic: [
@@ -214,8 +240,17 @@
             updateCounters(); 
         }
 
+        function checkPin(actionName) {
+            const input = prompt(`🔒 مطلوب كلمة المرور لـ [${actionName}]:`);
+            if (input === null) return false;
+            if (input.trim() === ADMIN_PIN) return true;
+            alert('❌ كلمة المرور غير صحيحة!');
+            return false;
+        }
+
         function resetDatabase() {
-            if(confirm('هل تريدين إعادة ضبط الفهرس وحذف الدروس المكررة واستعادة درس العرش يزهو فقط؟')) {
+            if (!checkPin("تنظيف وإعادة ضبط السجل")) return;
+            if(confirm('هل أنت متأكد من إعادة ضبط الفهرس وحذف كافة الدروس واستعادة الوضع الافتراضي؟')) {
                 localStorage.removeItem('randa_academy_db');
                 updateCounters();
                 alert('تمت استعادة الفهرس النظيف بنجاح! 🌟');
@@ -257,16 +292,62 @@
                 c.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 0;"><i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا توجد دروس مضافة بعد. اضغطي على زر 'رقمنة الدفتر' لتصوير أول درس!</div>`;
             } else {
                 c.innerHTML = list.map(l => `
-                    <div class="lesson-item-btn" onclick="openLessonViewer('${subKey}', ${l.id})">
-                        <div>
+                    <div class="lesson-row-card">
+                        <div class="lesson-info-click" onclick="openLessonViewer('${subKey}', ${l.id})">
                             <strong style="color: var(--gold); display: block; font-size: 1.05rem;">${l.title}</strong>
                             <small style="color: var(--text-muted);">${l.date} ${l.radarQuestions ? ' • 🎯 تم الرصد' : ''}</small>
                         </div>
-                        <i class="fa-solid fa-chevron-left" style="color: var(--gold);"></i>
+                        <div class="lesson-actions-group">
+                            <button class="mini-act-btn edit" title="تعديل الدرس" onclick="triggerEditLesson('${subKey}', ${l.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="mini-act-btn delete" title="حذف الدرس" onclick="triggerDeleteLesson('${subKey}', ${l.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
                     </div>
                 `).join('');
             }
             openModal('subjectModal');
+        }
+
+        function triggerDeleteLesson(subKey, lessonId) {
+            if (!checkPin("حذف هذا الدرس")) return;
+            if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الدرس نهائياً؟")) return;
+            const db = getDB();
+            db[subKey] = db[subKey].filter(x => x.id !== lessonId);
+            saveDB(db);
+            openSubjectDrawer(subKey);
+            alert("🗑️ تم حذف الدرس بنجاح!");
+        }
+
+        function triggerEditLesson(subKey, lessonId) {
+            if (!checkPin("تعديل هذا الدرس")) return;
+            const db = getDB();
+            const lesson = db[subKey].find(x => x.id === lessonId);
+            if (!lesson) return;
+
+            editingSubKey = subKey;
+            editingLessonId = lessonId;
+
+            document.getElementById('editLessonTitleInput').value = lesson.title;
+            document.getElementById('editLessonContentInput').value = lesson.content.replace(/<br\s*[\/]?>/gi, '\n');
+
+            openModal('editLessonModal');
+        }
+
+        function saveEditedLesson() {
+            const title = document.getElementById('editLessonTitleInput').value.trim();
+            const rawContent = document.getElementById('editLessonContentInput').value.trim();
+            if (!title || !rawContent) return alert("يرجى ملء جميع الحقول!");
+
+            const db = getDB();
+            const lesson = db[editingSubKey].find(x => x.id === editingLessonId);
+            if (!lesson) return;
+
+            lesson.title = title;
+            lesson.content = rawContent.replace(/\n/g, '<br>');
+            saveDB(db);
+
+            closeModal('editLessonModal');
+            openSubjectDrawer(editingSubKey);
+            alert("✨ تم حفظ وتحديث بيانات الدرس بنجاح!");
         }
 
         function openLessonViewer(subKey, lessonId) {
@@ -282,7 +363,6 @@
             document.getElementById('viewLessonDate').innerText = `${subjectNames[subKey]} | ${lesson.date}`;
             document.getElementById('viewLessonBody').innerHTML = lesson.content;
             
-            // عرض الكويز التفاعلي
             const qContainer = document.getElementById('viewLessonQuiz');
             if(lesson.quiz && lesson.quiz.length > 0) {
                 qContainer.innerHTML = lesson.quiz.map((item, qIdx) => `
@@ -297,7 +377,6 @@
                 qContainer.innerHTML = `<p style="color: var(--text-muted);">لا توجد أسئلة مدمجة لهذا الدرس.</p>`;
             }
 
-            // عرض توقعات الرادار المحفوظة إن وجدت
             renderSavedRadar(lesson);
             
             closeModal('subjectModal');
@@ -330,7 +409,6 @@
             }
         }
 
-        // دالة استدعاء Gemini مع إعادة المحاولة التلقائية
         async function callGemini(apiKey, contentsPayload, maxRetries = 2) {
             const TARGET_MODEL = 'gemini-3.6-flash';
             let lastError = null;
@@ -371,7 +449,6 @@
             throw lastError;
         }
 
-        // تشغيل الرادار وحفظ أو تحديث الأسئلة تلقائياً داخل الدرس
         async function launchViewerRadar() {
             const apiKey = localStorage.getItem('randa_gemini_key');
             if(!apiKey) return alert('يرجى حفظ المفتاح من الإعدادات أولاً!');
@@ -401,12 +478,10 @@ ${existingQuestions}
             try {
                 const text = await callGemini(apiKey, [{ parts: [{ text: prompt }] }]);
                 
-                // تحديث بيانات الدرس في قاعدة البيانات المحلية
                 lesson.radarQuestions = text;
                 lesson.radarLastUpdate = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
                 saveDB(db);
 
-                // تحديث الواجهة مباشرة
                 renderSavedRadar(lesson);
                 hideLoading();
                 alert('✨ تم تشغيل الرادار وتحديث بنك الأسئلة الوزارية بنجاح أسفل الدرس!');
@@ -500,31 +575,12 @@ ${existingQuestions}
             e.target.value = '';
         });
 
-        async function saveApiKey() {
+        function saveApiKeyDirect() {
             const key = document.getElementById('apiKeyInput').value.trim();
             if(!key) return alert('الرجاء إدخال المفتاح أولاً!');
-            
-            const btn = document.getElementById('saveKeyBtn');
-            const note = document.getElementById('keyStatusNote');
-            btn.innerText = 'جارٍ فحص المفتاح... ⏳';
-            btn.disabled = true;
-            note.innerText = '';
-
-            try {
-                await callGemini(key, [{ parts: [{ text: 'اختبار الاتصال السريع' }] }]);
-                localStorage.setItem('randa_gemini_key', key);
-                note.style.color = '#4ade80';
-                note.innerText = '🟢 المفتاح يعمل بنجاح 100%! تم الحفظ.';
-                alert('🟢 تم فحص المفتاح وهو صالح ومفعل بنجاح! تم حفظه في المنصة.');
-                closeModal('settingsModal');
-            } catch(err) {
-                note.style.color = '#f87171';
-                note.innerText = '🔴 خطأ في المفتاح: ' + err.message;
-                alert('❌ المفتاح لا يعمل!\nسبب الخطأ: ' + err.message);
-            } finally {
-                btn.innerText = 'فحص وحفظ وتفعيل القوة ⚡';
-                btn.disabled = false;
-            }
+            localStorage.setItem('randa_gemini_key', key);
+            alert('تم حفظ المفتاح بنجاح وتفعيل القوة ⚡');
+            closeModal('settingsModal');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
