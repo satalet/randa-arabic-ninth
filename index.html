@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a0b2e">
+    <link rel="apple-touch-icon" href="assets/icon.png?v=7">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>منصة رندة VIP - السحابية</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        :root {
+            --bg-grad-1: #0f172a; --bg-grad-2: #1e1b4b;
+            --gold: #fbbf24; --gold-glow: rgba(251, 191, 36, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+        }
+        body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2)); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        .bg-glow { position: absolute; top: -10%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; }
+        .container { width: 90%; max-width: 800px; z-index: 1; padding-top: 25px; padding-bottom: 50px; }
+        .header-glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); margin-bottom: 18px; position: relative; }
+        
+        .cloud-badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; color: var(--text-muted); }
+        .cloud-badge.online { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); }
+
+        .vip-badge { background: linear-gradient(135deg, #d4af37, #aa771c); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; box-shadow: 0 0 15px var(--gold-glow); }
+        .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--gold); margin: 0 auto 15px; display: block; box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); object-fit: cover; cursor: pointer; transition: 0.3s; }
+        .profile-pic:hover { transform: scale(1.05); }
+        .header-glass h1 { margin: 0; font-size: 2rem; font-weight: 900; color: #fff; }
+        .header-glass p { margin: 8px 0 0; color: var(--text-muted); font-size: 1rem; }
+
+        .broadcast-card {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(15, 23, 42, 0.7));
+            border: 1.5px solid var(--gold);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.2);
+        }
+        .broadcast-content { display: flex; align-items: center; gap: 12px; text-align: right; flex: 1; }
+        .broadcast-icon { font-size: 1.4rem; color: var(--gold); }
+        .broadcast-text { font-size: 0.95rem; line-height: 1.5; color: #f8fafc; font-weight: 500; }
+        .broadcast-date { display: block; font-size: 0.75rem; color: var(--gold); margin-top: 3px; }
+        .broadcast-edit-btn { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--gold); border-radius: 8px; padding: 6px 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .broadcast-edit-btn:hover { background: var(--gold); color: #000; }
+
+        .control-panel { background: rgba(0,0,0,0.25); border: 1px solid var(--gold); border-radius: 20px; padding: 15px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .vip-btn { background: linear-gradient(135deg, #1e293b, #0f172a); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 15px; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; flex: 1 1 calc(50% - 10px); min-width: 130px; justify-content: center; }
+        .vip-btn:hover { background: var(--gold); color: #000; }
+
+        .section-title { font-size: 1.2rem; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .subject-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 15px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
+        .subject-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .icon-wrap { font-size: 2.2rem; margin-bottom: 10px; display: block; }
+        .title { font-weight: bold; font-size: 1.1rem; display: block; }
+        .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: block; }
+
+        .modal { display: none; position: fixed; z-index: 9999; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 15px; }
+        .modal.show { display: flex !important; }
+        .glass-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; width: 100%; max-width: 650px; position: relative; max-height: 85vh; overflow-y: auto; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: var(--gold); font-size: 30px; font-weight: bold; cursor: pointer; z-index: 10; }
+        .loader { border: 4px solid rgba(251, 191, 36, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .lesson-row-card { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; transition: 0.2s; box-sizing: border-box; }
+        .lesson-row-card:hover { border-color: rgba(251,191,36,0.5); background: rgba(255,255,255,0.08); }
+        .lesson-info-click { flex: 1; cursor: pointer; text-align: right; }
+        .lesson-actions-group { display: flex; gap: 8px; margin-right: 12px; }
+        .mini-act-btn { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-muted); border-radius: 8px; padding: 7px 11px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .mini-act-btn.edit:hover { color: var(--gold); border-color: var(--gold); background: rgba(251,191,36,0.15); }
+        .mini-act-btn.delete:hover { color: #f87171; border-color: #ef4444; background: rgba(239,68,68,0.15); }
+
+        .quiz-card { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-top: 15px; }
+        .opt-btn { display: block; width: 100%; text-align: right; background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; margin-top: 6px; cursor: pointer; font-family: 'Tajawal'; }
+        .opt-btn.correct { background: #16a34a !important; border-color: #22c55e; }
+        .opt-btn.wrong { background: #dc2626 !important; border-color: #ef4444; }
+        .radar-top-btn { background: var(--gold); color: #000; border: none; padding: 8px 16px; border-radius: 10px; font-weight: bold; font-family: 'Tajawal'; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+        .radar-saved-box { margin-top: 25px; background: rgba(251, 191, 36, 0.05); border: 1.5px dashed var(--gold); border-radius: 15px; padding: 18px; text-align: right; }
+        .radar-saved-title { color: var(--gold); font-size: 1.15rem; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        
+        .edit-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; margin-bottom: 12px; box-sizing: border-box; }
+        .edit-textarea { width: 100%; height: 180px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; line-height: 1.6; resize: vertical; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <input type="file" id="cameraInput" accept="image/*" style="display: none;">
+
+    <div class="container">
+        <div class="header-glass">
+            <div id="cloudStatus" class="cloud-badge"><i class="fa-solid fa-cloud"></i> جاري الاتصال...</div>
+            <span class="vip-badge">VIP Student</span>
+            <img src="assets/icon.png?v=7" alt="Randa" class="profile-pic" onclick="openModal('imageModal')">
+            <h1>أكاديمية رندة زربا</h1>
+            <p>مدرسة الدوحة - الصف التاسع | المنصة السحابية</p>
+        </div>
+
+        <div class="broadcast-card" id="broadcastCard">
+            <div class="broadcast-content">
+                <i class="fa-solid fa-bullhorn broadcast-icon"></i>
+                <div>
+                    <div class="broadcast-text" id="broadcastText">أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚</div>
+                    <span class="broadcast-date" id="broadcastDate">منصة رندة الرسمية</span>
+                </div>
+            </div>
+            <button class="broadcast-edit-btn" title="تعديل الملاحظة (محمي)" onclick="triggerEditBroadcast()"><i class="fa-solid fa-pen"></i></button>
+        </div>
+
+        <div class="control-panel">
+            <button class="vip-btn" onclick="triggerScan()"><i class="fa-solid fa-camera"></i> رقمنة الدفتر (مسح ذكي)</button>
+            <button class="vip-btn" onclick="openModal('settingsModal')"><i class="fa-solid fa-gear"></i> إعدادات VIP</button>
+            <button class="vip-btn" onclick="manualCloudSync()"><i class="fa-solid fa-cloud-arrow-up"></i> مزامنة سحابية</button>
+            <button class="vip-btn" onclick="resetDatabase()"><i class="fa-solid fa-lock"></i> تنظيف السجل (محمي)</button>
+        </div>
+
+        <div class="section-title"><span>📚</span> مكتبة المواد الدراسية</div>
+        <div class="grid">
+            <div class="subject-card" onclick="openSubjectDrawer('arabic')">
+                <span class="icon-wrap">📖</span>
+                <span class="title">اللغة العربية</span>
+                <span class="subtitle" id="sub_count_arabic">جاري الفحص...</span>
+            </div>
+            <div class="subject-card" onclick="openSubjectDrawer('science')">
+                <span class="icon-wrap">🔬</span>
+                <span class="title">العلوم</span>
+                <span class="subtitle" id="sub_count_science">جاري الفحص...</span>
+            </div>
+            <div class="subject-card" onclick="openSubjectDrawer('math')">
+                <span class="icon-wrap">📐</span>
+                <span class="title">الرياضيات</span>
+                <span class="subtitle" id="sub_count_math">جاري الفحص...</span>
+            </div>
+            <div class="subject-card" onclick="openSubjectDrawer('social')">
+                <span class="icon-wrap">🌍</span>
+                <span class="title">الاجتماعيات</span>
+                <span class="subtitle" id="sub_count_social">جاري الفحص...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل التنبيه السحابي -->
+    <div id="editBroadcastModal" class="modal" onclick="if(event.target==this) closeModal('editBroadcastModal')">
+        <div class="glass-box" style="max-width: 500px;">
+            <span class="close-btn" onclick="closeModal('editBroadcastModal')">&times;</span>
+            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-bullhorn"></i> نشر تنبيه جديد للطالبات</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">اكتبي الملاحظة وستظهر فوراً لجميع الطالبات في أعلى الصفحة.</p>
+            <textarea id="broadcastInput" class="edit-textarea" style="height: 110px;" placeholder="اكتبي التنبيه هنا..."></textarea>
+            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> نشر فوري للسحابة 📢</button>
+        </div>
+    </div>
+
+    <!-- درج فهرس المادة -->
+    <div id="subjectModal" class="modal" onclick="if(event.target==this) closeModal('subjectModal')">
+        <div class="glass-box">
+            <span class="close-btn" onclick="closeModal('subjectModal')">&times;</span>
+            <h2 id="subjectModalTitle" style="color: var(--gold); margin-top: 0;"></h2>
+            <div id="lessonsListContainer" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- نافذة عرض الدرس الشاملة -->
+    <div id="lessonViewerModal" class="modal" onclick="if(event.target==this) closeModal('lessonViewerModal')">
+        <div class="glass-box" style="max-width: 750px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 12px; margin-bottom: 15px;">
+                <button class="radar-top-btn" onclick="launchViewerRadar()"><i class="fa-solid fa-crosshairs"></i> رادار الدرس وتحديث الأسئلة</button>
+                <span class="close-btn" style="position: static;" onclick="closeModal('lessonViewerModal')">&times;</span>
+            </div>
+            <h2 id="viewLessonTitle" style="color: var(--gold); margin: 0 0 5px 0;"></h2>
+            <div id="viewLessonDate" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;"></div>
+            <div id="viewLessonBody" style="line-height: 1.9; font-size: 1.1rem; text-align: right; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;"></div>
+            
+            <h3 style="color: var(--gold); margin-top: 25px;"><i class="fa-solid fa-circle-question"></i> تحدي الأسئلة التفاعلي</h3>
+            <div id="viewLessonQuiz"></div>
+
+            <div id="savedRadarSection" class="radar-saved-box" style="display: none;">
+                <div class="radar-saved-title">
+                    <span><i class="fa-solid fa-crosshairs"></i> بنك توقعات الرادار الوزارية المعتمدة:</span>
+                    <span id="radarSavedDate" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                </div>
+                <div id="savedRadarContent" style="line-height: 1.8; font-size: 1rem; color: #f1f5f9;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل الدرس المحمية -->
+    <div id="editLessonModal" class="modal" onclick="if(event.target==this) closeModal('editLessonModal')">
+        <div class="glass-box" style="max-width: 550px;">
+            <span class="close-btn" onclick="closeModal('editLessonModal')">&times;</span>
+            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات الدرس</h2>
+            
+            <label style="display: block; text-align: right; margin-bottom: 5px; font-size: 0.9rem; color: var(--gold);">عنوان الدرس:</label>
+            <input type="text" id="editLessonTitleInput" class="edit-input">
+
+            <label style="display: block; text-align: right; margin-bottom: 5px; font-size: 0.9rem; color: var(--gold);">محتوى الشرح:</label>
+            <textarea id="editLessonContentInput" class="edit-textarea"></textarea>
+
+            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveEditedLesson()"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات ونشرها للسحابة 💾</button>
+        </div>
+    </div>
+
+    <!-- نافذة صورة رندة التفاعلية -->
+    <div id="imageModal" class="modal" onclick="if(event.target==this) closeModal('imageModal')">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 90%; position: relative;">
+            <span class="close-btn" onclick="closeModal('imageModal')" style="top: -40px; right: 0;">&times;</span>
+            <img style="max-width: 100%; max-height: 60vh; border-radius: 18px; border: 3px solid var(--gold); box-shadow: 0 0 35px rgba(251, 191, 36, 0.5); object-fit: contain;" src="assets/full-pic.jpg" alt="Randa">
+            <div style="margin-top: 18px; color: #fff; font-size: 1.25rem; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.8); line-height: 1.6; text-align: center;">
+                أهلاً وسهلاً.. نوّرتوا منصة رندة التعليمية 👑✨🌸<br>
+                <span style="font-size: 0.95rem; color: var(--gold); font-weight: 600;">طريق التفوق والمركز الأول دائماً 🌟📚</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الإعدادات -->
+    <div id="settingsModal" class="modal" onclick="if(event.target==this) closeModal('settingsModal')">
+        <div class="glass-box" style="max-width: 420px; text-align: center;">
+            <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
+            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-key"></i> إعدادات VIP</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه محلياً.</p>
+            <input type="password" id="apiKeyInput" style="width: 90%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;" placeholder="AIzaSy...">
+            <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKeyDirect()">حفظ المفتاح وتفعيل القوة ⚡</button>
+        </div>
+    </div>
+
+    <!-- نافذة التحميل -->
+    <div id="loadingModal" class="modal">
+        <div class="glass-box" style="background: transparent; border: none; text-align: center;">
+            <div class="loader"></div>
+            <h3 id="loadingText" style="color: var(--gold);">جارٍ المعالجة...</h3>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PIN = "1822012";
+        const FIREBASE_ENDPOINT = "https://randa-academy-default-rtdb.firebaseio.com/academy_db.json";
+
+        let currentActiveSub = '';
+        let currentActiveLessonId = null;
+        let currentOpenLessonText = "";
+        
+        let editingSubKey = '';
+        let editingLessonId = null;
+
+        const defaultLessons = {
+            announcement: {
+                text: "أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚",
+                date: "تنبيه إداري عام"
+            },
+            arabic: [],
+            science: [],
+            math: [],
+            social: []
+        };
+
+        function getDB() {
+            const data = localStorage.getItem('randa_academy_db');
+            if(!data) {
+                localStorage.setItem('randa_academy_db', JSON.stringify(defaultLessons));
+                return defaultLessons;
+            }
+            try { return JSON.parse(data); } catch(e) { return defaultLessons; }
+        }
+
+        async function saveDB(db, syncToCloud = true) { 
+            localStorage.setItem('randa_academy_db', JSON.stringify(db)); 
+            updateCounters(); 
+            renderAnnouncement(db);
+            if(syncToCloud) {
+                await pushToCloud(db);
+            }
+        }
+
+        async function pushToCloud(db) {
+            try {
+                await fetch(FIREBASE_ENDPOINT, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(db)
+                });
+                setCloudStatus(true);
+            } catch(e) {
+                setCloudStatus(false);
+                console.warn('تعذر الرفع السحابي اللحظي:', e);
+            }
+        }
+
+        async function pullFromCloud() {
+            try {
+                const res = await fetch(FIREBASE_ENDPOINT);
+                const cloudData = await res.json();
+                if(cloudData && typeof cloudData === 'object' && cloudData.arabic) {
+                    localStorage.setItem('randa_academy_db', JSON.stringify(cloudData));
+                    renderAnnouncement(cloudData);
+                    setCloudStatus(true);
+                } else {
+                    await pushToCloud(getDB());
+                }
+            } catch(e) {
+                setCloudStatus(false);
+                renderAnnouncement(getDB());
+            }
+            updateCounters();
+        }
+
+        function setCloudStatus(isOnline) {
+            const el = document.getElementById('cloudStatus');
+            if(isOnline) {
+                el.className = 'cloud-badge online';
+                el.innerHTML = '<i class="fa-solid fa-cloud-bolt"></i> سحابي متزامن ⚡';
+            } else {
+                el.className = 'cloud-badge';
+                el.innerHTML = '<i class="fa-solid fa-cloud"></i> ذاكرة محلية (أوفلاين)';
+            }
+        }
+
+        function renderAnnouncement(db) {
+            const anno = db.announcement || defaultLessons.announcement;
+            document.getElementById('broadcastText').innerText = anno.text || "";
+            document.getElementById('broadcastDate').innerText = anno.date ? `📢 ${anno.date}` : "";
+        }
+
+        function triggerEditBroadcast() {
+            if (!checkPin("نشر تنبيه أو ملاحظة عامة للطالبات")) return;
+            const db = getDB();
+            const anno = db.announcement || defaultLessons.announcement;
+            document.getElementById('broadcastInput').value = anno.text || "";
+            openModal('editBroadcastModal');
+        }
+
+        async function saveBroadcast() {
+            const text = document.getElementById('broadcastInput').value.trim();
+            if(!text) return alert("الرجاء كتابة نص التنبيه أولاً!");
+
+            const db = getDB();
+            db.announcement = {
+                text: text,
+                date: `نُشر في: ${new Date().toLocaleDateString('ar-EG')} (${new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})})`
+            };
+
+            showLoading('📢 جاري نشر التنبيه لجميع هواتف الطالبات سحابياً...');
+            await saveDB(db, true);
+            hideLoading();
+            closeModal('editBroadcastModal');
+            alert('🟢 تم نشر التنبيه سحابياً بنجاح! سيظهر لجميع الطالبات فور فتح المنصة.');
+        }
+
+        async function manualCloudSync() {
+            if (!checkPin("مزامنة السحابة اليدوية")) return;
+            showLoading('☁️ جاري مزامنة المنصة ورفع أحدث الدروس للسحابة...');
+            await pushToCloud(getDB());
+            hideLoading();
+            alert('🟢 تمت المزامنة السحابية بنجاح! جميع أجهزة الطالبات ستستقبل التحديث فوراً.');
+        }
+
+        function checkPin(actionName) {
+            const input = prompt(`🔒 مطلوب كلمة المرور لـ [${actionName}]:`);
+            if (input === null) return false;
+            if (input.trim() === ADMIN_PIN) return true;
+            alert('❌ كلمة المرور غير صحيحة!');
+            return false;
+        }
+
+        async function resetDatabase() {
+            if (!checkPin("تنظيف وإعادة ضبط السجل")) return;
+            if(confirm('هل أنت متأكد من إعادة ضبط الفهرس واستعادة الوضع الافتراضي ومزامنته سحابياً؟')) {
+                localStorage.setItem('randa_academy_db', JSON.stringify(defaultLessons));
+                await pushToCloud(defaultLessons);
+                updateCounters();
+                renderAnnouncement(defaultLessons);
+                alert('تمت استعادة الفهرس النظيف سحابياً ومحلياً! 🌟');
+                location.reload();
+            }
+        }
+
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.add('show'); 
+        }
+
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.remove('show'); 
+        }
+
+        function showLoading(msg) { document.getElementById('loadingText').innerText = msg; openModal('loadingModal'); }
+        function hideLoading() { closeModal('loadingModal'); }
+
+        function updateCounters() {
+            const db = getDB();
+            document.getElementById('sub_count_arabic').innerText = `${db.arabic?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_science').innerText = `${db.science?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_math').innerText = `${db.math?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_social').innerText = `${db.social?.length || 0} درس متوفر`;
+        }
+
+        const subjectNames = { arabic: 'اللغة العربية', science: 'العلوم العامة', math: 'الرياضيات', social: 'الدراسات الاجتماعية' };
+
+        function openSubjectDrawer(subKey) {
+            currentActiveSub = subKey;
+            const db = getDB();
+            const list = db[subKey] || [];
+            document.getElementById('subjectModalTitle').innerHTML = `فهرس دروس: ${subjectNames[subKey]}`;
+            const c = document.getElementById('lessonsListContainer');
+            
+            if(list.length === 0) {
+                c.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 0;"><i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا توجد دروس مضافة بعد. اضغطي على زر 'رقمنة الدفتر' لتصوير أول درس!</div>`;
+            } else {
+                c.innerHTML = list.map(l => `
+                    <div class="lesson-row-card">
+                        <div class="lesson-info-click" onclick="openLessonViewer('${subKey}', ${l.id})">
+                            <strong style="color: var(--gold); display: block; font-size: 1.05rem;">${l.title}</strong>
+                            <small style="color: var(--text-muted);">${l.date} ${l.radarQuestions ? ' • 🎯 تم الرصد' : ''}</small>
+                        </div>
+                        <div class="lesson-actions-group">
+                            <button class="mini-act-btn edit" title="تعديل الدرس" onclick="triggerEditLesson('${subKey}', ${l.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="mini-act-btn delete" title="حذف الدرس" onclick="triggerDeleteLesson('${subKey}', ${l.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            openModal('subjectModal');
+        }
+
+        async function triggerDeleteLesson(subKey, lessonId) {
+            if (!checkPin("حذف هذا الدرس")) return;
+            if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الدرس نهائياً ومزامنته سحابياً؟")) return;
+            const db = getDB();
+            db[subKey] = db[subKey].filter(x => x.id !== lessonId);
+            await saveDB(db, true);
+            openSubjectDrawer(subKey);
+            alert("🗑️ تم حذف الدرس ومزامنته مع السحابة!");
+        }
+
+        function triggerEditLesson(subKey, lessonId) {
+            if (!checkPin("تعديل هذا الدرس")) return;
+            const db = getDB();
+            const lesson = db[subKey].find(x => x.id === lessonId);
+            if (!lesson) return;
+
+            editingSubKey = subKey;
+            editingLessonId = lessonId;
+
+            document.getElementById('editLessonTitleInput').value = lesson.title;
+            document.getElementById('editLessonContentInput').value = lesson.content.replace(/<br\s*[\/]?>/gi, '\n');
+
+            openModal('editLessonModal');
+        }
+
+        async function saveEditedLesson() {
+            const title = document.getElementById('editLessonTitleInput').value.trim();
+            const rawContent = document.getElementById('editLessonContentInput').value.trim();
+            if (!title || !rawContent) return alert("يرجى ملء جميع الحقول!");
+
+            const db = getDB();
+            const lesson = db[editingSubKey].find(x => x.id === editingLessonId);
+            if (!lesson) return;
+
+            lesson.title = title;
+            lesson.content = rawContent.replace(/\n/g, '<br>');
+            await saveDB(db, true);
+
+            closeModal('editLessonModal');
+            openSubjectDrawer(editingSubKey);
+            alert("✨ تم حفظ وتحديث بيانات الدرس سحابياً بنجاح!");
+        }
+
+        function openLessonViewer(subKey, lessonId) {
+            currentActiveSub = subKey;
+            currentActiveLessonId = lessonId;
+
+            const db = getDB();
+            const lesson = db[subKey].find(x => x.id === lessonId);
+            if(!lesson) return;
+            
+            currentOpenLessonText = lesson.content;
+            document.getElementById('viewLessonTitle').innerText = lesson.title;
+            document.getElementById('viewLessonDate').innerText = `${subjectNames[subKey]} | ${lesson.date}`;
+            document.getElementById('viewLessonBody').innerHTML = lesson.content;
+            
+            const qContainer = document.getElementById('viewLessonQuiz');
+            if(lesson.quiz && lesson.quiz.length > 0) {
+                qContainer.innerHTML = lesson.quiz.map((item, qIdx) => `
+                    <div class="quiz-card">
+                        <div style="font-weight: bold; margin-bottom: 8px;">س${qIdx+1}: ${item.q}</div>
+                        ${item.options.map((opt, oIdx) => `
+                            <button class="opt-btn" onclick="checkAnswer(this, ${oIdx}, ${item.ans})">${opt}</button>
+                        `).join('')}
+                    </div>
+                `).join('');
+            } else {
+                qContainer.innerHTML = `<p style="color: var(--text-muted);">لا توجد أسئلة مدمجة لهذا الدرس.</p>`;
+            }
+
+            renderSavedRadar(lesson);
+            
+            closeModal('subjectModal');
+            openModal('lessonViewerModal');
+        }
+
+        function renderSavedRadar(lesson) {
+            const sec = document.getElementById('savedRadarSection');
+            const cont = document.getElementById('savedRadarContent');
+            const dateSpan = document.getElementById('radarSavedDate');
+
+            if(lesson && lesson.radarQuestions) {
+                cont.innerHTML = lesson.radarQuestions;
+                dateSpan.innerText = lesson.radarLastUpdate ? `(آخر تحديث: ${lesson.radarLastUpdate})` : '';
+                sec.style.display = 'block';
+            } else {
+                sec.style.display = 'none';
+            }
+        }
+
+        function checkAnswer(btn, selected, correct) {
+            const parent = btn.parentElement;
+            const btns = parent.querySelectorAll('.opt-btn');
+            btns.forEach(b => b.disabled = true);
+            if(selected === correct) {
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('wrong');
+                btns[correct].classList.add('correct');
+            }
+        }
+
+        async function callGemini(apiKey, contentsPayload, maxRetries = 2) {
+            const TARGET_MODEL = 'gemini-3.6-flash';
+            let lastError = null;
+
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TARGET_MODEL}:generateContent`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-goog-api-key': apiKey 
+                        },
+                        body: JSON.stringify({ contents: contentsPayload })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.error) {
+                        if (data.error.message && data.error.message.includes('high demand') && attempt < maxRetries) {
+                            await new Promise(r => setTimeout(r, 1500));
+                            continue;
+                        }
+                        throw new Error(data.error.message);
+                    }
+
+                    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    throw new Error('لم تصل استجابة واضحة من النموذج');
+                } catch(err) {
+                    lastError = err;
+                    if (err.message && err.message.includes('high demand') && attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, 1500));
+                        continue;
+                    }
+                    throw err;
+                }
+            }
+            throw lastError;
+        }
+
+        async function launchViewerRadar() {
+            const apiKey = localStorage.getItem('randa_gemini_key');
+            if(!apiKey) return alert('يرجى حفظ المفتاح من الإعدادات أولاً!');
+
+            const db = getDB();
+            const lesson = db[currentActiveSub]?.find(x => x.id === currentActiveLessonId);
+            if(!lesson) return alert('تعذر تحديد الدرس الحالي!');
+
+            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس ويحدث بنك الأسئلة سحابياً...');
+            
+            const existingQuestions = lesson.radarQuestions ? `الأسئلة السابقة المسجلة للدرس:\n"""${lesson.radarQuestions.replace(/<[^>]*>?/gm, ' ')}"""\nإذا وجدت جوانب هامة جديدة أو إضافات دقيقة لم تغطها هذه الأسئلة، قم بدمجها وتطوير القائمة لتشمل أهم 3-4 أسئلة وزارية شاملة.` : '';
+
+            const prompt = `أنت رادار امتحانات خبير متخصص في المنهاج الفلسطيني للصف التاسع، ومساعد للطالبة رندة.
+محتوى الدرس المدرسي الحصري:
+"""${currentOpenLessonText.replace(/<[^>]*>?/gm, ' ')}"""
+
+${existingQuestions}
+
+المهمة:
+حلل هذا المحتوى بدقة واستخرج أهم 3 أسئلة امتحانية نموذجية مع إجاباتها الكاملة وفق المعايير الوزارية:
+🔴 [سؤال وزاري حتمي]: يختبر الفهم العميق والتحليل.
+🟡 [كمين امتحاني / فكرة دقيقة]: يركز على نقطة يسهو عنها الطلاب مع كشف طريقة الإجابة الصحيحة.
+🟢 [سؤال مباشر ومضمون]: يختبر الحقائق والمفاهيم الأساسية.
+
+التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br> و <ul> و <li>) بدون أي وسوم markdown.`;
+
+            try {
+                const text = await callGemini(apiKey, [{ parts: [{ text: prompt }] }]);
+                
+                lesson.radarQuestions = text;
+                lesson.radarLastUpdate = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                await saveDB(db, true);
+
+                renderSavedRadar(lesson);
+                hideLoading();
+                alert('✨ تم تشغيل الرادار وتحديث بنك الأسئلة الوزارية سحابياً بنجاح!');
+            } catch(e) {
+                hideLoading();
+                alert('فشل تشغيل الرادار: ' + e.message);
+            }
+        }
+
+        function triggerScan() {
+            if(!localStorage.getItem('randa_gemini_key')) { 
+                openModal('settingsModal'); 
+                return alert('يرجى إدخال مفتاح الذكاء الاصطناعي أولاً!'); 
+            }
+            const cam = document.getElementById('cameraInput');
+            cam.value = '';
+            cam.click();
+        }
+
+        document.getElementById('cameraInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            const apiKey = localStorage.getItem('randa_gemini_key');
+            showLoading('🛰️ جارٍ استخراج خط اليد وتحليله أكاديمياً وإنشاء الأسئلة...');
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height, max = 1400;
+                    if(w > max || h > max) {
+                        if(w > h) { h = Math.round((h*max)/w); w = max; }
+                        else { w = Math.round((w*max)/h); h = max; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+
+                    const prompt = `أنت معلم خبير في المنهاج الفلسطيني ومساعد دراسي ذكي للطالبة رندة (الصف التاسع).
+اقرأ صورة الدفتر المكتوبة بخط اليد بدقة واستخرج محتواها التعليمي كاملاً.
+ملاحظة تصنيف المواد:
+- دروس التاريخ والجغرافيا والتربية الوطنية تصنف دائماً كـ "social" (الاجتماعيات).
+- دروس اللغة العربية والقواعد والنصوص تصنف "arabic".
+- دروس الأحياء والفيزياء والكيمياء تصنف "science".
+- دروس الجبر والهندسة تصنف "math".
+
+صغ المخرجات بصيغة JSON خام فقط دون أي كود Markdown (\`\`\`json أو \`\`\`):
+{
+  "subject": "arabic أو science أو math أو social",
+  "title": "عنوان الدرس الدقيق كما بالدفتر",
+  "content": "شرح دراسي مفصل وغني ومنسق بوسوم HTML مثل <b> و <br> و <ul> ليساعد على الدراسة الكاملة",
+  "quiz": [
+    {"q": "سؤال امتحاني دقيق رقم 1", "options": ["خيار1", "خيار2", "خيار3"], "ans": 0},
+    {"q": "سؤال امتحاني دقيق رقم 2", "options": ["خيار1", "خيار2", "خيار3"], "ans": 1},
+    {"q": "سؤال امتحاني دقيق رقم 3", "options": ["خيار1", "خيار2", "خيار3"], "ans": 0}
+  ]
+}`;
+
+                    try {
+                        const rawText = await callGemini(apiKey, [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }]);
+                        let raw = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const parsed = JSON.parse(raw);
+
+                        const db = getDB();
+                        const targetSub = (parsed.subject && db[parsed.subject]) ? parsed.subject : 'arabic';
+                        const newLesson = {
+                            id: Date.now(),
+                            title: parsed.title || "درس جديد بدون عنوان",
+                            date: new Date().toLocaleDateString('ar-EG'),
+                            content: parsed.content || "لا يوجد محتوى مستخرج.",
+                            quiz: parsed.quiz || [],
+                            radarQuestions: null,
+                            radarLastUpdate: null
+                        };
+
+                        db[targetSub].unshift(newLesson);
+                        
+                        db.announcement = {
+                            text: `✨ تم إضافة درس جديد: (${newLesson.title}) في مادة ${subjectNames[targetSub]}!`,
+                            date: `نُشر في: ${new Date().toLocaleDateString('ar-EG')} (${new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})})`
+                        };
+
+                        await saveDB(db, true);
+                        hideLoading();
+                        alert(`✨ تم التحليل بنجاح!\nتمت أرشفة ونشر درس (${newLesson.title}) سحابياً في مادة: ${subjectNames[targetSub]}`);
+                        openSubjectDrawer(targetSub);
+                    } catch(err) {
+                        hideLoading();
+                        alert('حدث خطأ أثناء معالجة الصفحة: ' + err.message);
+                    }
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        });
+
+        function saveApiKeyDirect() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if(!key) return alert('الرجاء إدخال المفتاح أولاً!');
+            localStorage.setItem('randa_gemini_key', key);
+            alert('تم حفظ المفتاح بنجاح وتفعيل القوة ⚡');
+            closeModal('settingsModal');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const saved = localStorage.getItem('randa_gemini_key');
+            if(saved) document.getElementById('apiKeyInput').value = saved;
+            
+            await pullFromCloud();
+        });
+    </script>
+</body>
+</html>
