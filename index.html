@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>منصة رندة VIP - السحابية</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@400;500;700;900&display=swap');
         :root {
             --bg-grad-1: #0f172a; --bg-grad-2: #1e1b4b;
             --gold: #fbbf24; --gold-glow: rgba(251, 191, 36, 0.4);
@@ -31,9 +31,9 @@
         .header-glass h1 { margin: 0; font-size: 2rem; font-weight: 900; color: #fff; }
         .header-glass p { margin: 8px 0 0; color: var(--text-muted); font-size: 1rem; }
 
-        /* شريط التنبيهات الملكي المزدوج */
+        /* شريط التنبيهات الملكي */
         .broadcast-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 27, 75, 0.7));
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 27, 75, 0.75));
             border: 1.5px solid var(--gold);
             border-radius: 18px;
             padding: 14px 18px;
@@ -64,12 +64,12 @@
         /* خانة ملاحظة رندة المستقلة والملفتة */
         .randa-special-container {
             margin-top: 12px;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(139, 92, 246, 0.15));
-            border: 1.5px dashed var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+            border: 1.5px dashed #fde047;
             border-radius: 14px;
             padding: 12px 16px;
             text-align: right;
-            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.08);
+            box-shadow: inset 0 0 20px rgba(253, 224, 71, 0.08), 0 4px 15px rgba(0,0,0,0.4);
         }
         .randa-tag-header {
             display: flex;
@@ -78,24 +78,30 @@
             margin-bottom: 6px;
         }
         .randa-badge-title {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: #fff;
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+            color: #000;
             padding: 3px 10px;
             border-radius: 12px;
-            font-size: 0.78rem;
-            font-weight: 800;
+            font-size: 0.8rem;
+            font-weight: 900;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
         }
+        
+        /* نوع الخط المخصص واللون المستقل لملاحظة رندة */
         .randa-note-content {
-            color: #e0f2fe;
-            font-size: 1.05rem;
-            font-weight: 700;
-            line-height: 1.6;
-            margin-top: 5px;
+            font-family: 'Cairo', sans-serif !important;
+            color: #fef08a !important; /* لون ذهبي نيون مشع ومميز */
+            font-size: 1.15rem !important;
+            font-weight: 900 !important;
+            line-height: 1.7 !important;
+            margin-top: 6px;
             word-break: break-word;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(254, 240, 138, 0.45);
+            letter-spacing: 0.3px;
         }
         .randa-note-time {
             font-size: 0.75rem;
@@ -155,7 +161,7 @@
             <p>مدرسة الدوحة - الصف التاسع | المنصة السحابية</p>
         </div>
 
-        <!-- شريط التنبيهات المطور: عبارة ثابتة + خانة ملفتة لملاحظات رندة -->
+        <!-- شريط التنبيهات المطور: عبارة ثابتة + خانة مستقلة بخط Cairo ولون نيون مميز -->
         <div class="broadcast-card" id="broadcastCard">
             <div class="broadcast-top-row">
                 <div class="broadcast-fixed-title">
@@ -219,12 +225,12 @@
                 أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚
             </div>
 
-            <label style="display: block; text-align: right; color: var(--accent-cyan); font-weight: bold; margin-bottom: 6px; font-size: 0.95rem;">
-                اكتبي ملاحظتكِ أو التنبيه المميز (سيظهر بلون وخط بارز للطالبات):
+            <label style="display: block; text-align: right; color: #fde047; font-weight: bold; margin-bottom: 6px; font-size: 0.95rem; font-family: 'Cairo';">
+                اكتبي ملاحظتكِ أو التنبيه المميز:
             </label>
-            <textarea id="broadcastInput" class="edit-textarea" style="border-color: var(--accent-cyan); color: #f8fafc;" placeholder="مثال: توقع أهم أسئلة في قصيدة العرش يزهو بالدرس.. ركزوا عليها كويس! 🎯"></textarea>
+            <textarea id="broadcastInput" class="edit-textarea" style="border-color: #fde047; color: #fef08a; font-family: 'Cairo'; font-weight: 700;" placeholder="اكتبي الملاحظة هنا..."></textarea>
             
-            <button class="vip-btn" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #0284c7, #0f172a); border-color: var(--accent-cyan); color: #fff;" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> نشر فوري لسحابة الطالبات 📢</button>
+            <button class="vip-btn" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #ca8a04, #0f172a); border-color: #fde047; color: #fff;" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> نشر فوري لسحابة الطالبات 📢</button>
         </div>
     </div>
 
@@ -391,12 +397,10 @@
             }
         }
 
-        // عرض التنبيه المخصص بلون وخط مميز
         function renderAnnouncement(db) {
             const anno = db.announcement || {};
             let customText = anno.customText || anno.text || "";
             
-            // تنظيف النص القديم إن وجد بداخله الجملة الثابتة لتفادي التكرار
             customText = customText.replace("أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚", "").trim();
             if(!customText) customText = "توقع أهم أسئلة في قصيدة العرش يزهو بالدرس 🎯⚡";
 
@@ -428,7 +432,7 @@
             await saveDB(db, true);
             hideLoading();
             closeModal('editBroadcastModal');
-            alert('🟢 تم نشر التنبيه المباشر بنجاح! سيظهر بلون بارز لجميع الطالبات فوراً.');
+            alert('🟢 تم نشر التنبيه المباشر بنجاح! سيظهر بلون وخط مميز لجميع الطالبات فوراً.');
         }
 
         function showModalDOM(id) { const el = document.getElementById(id); if (el) el.classList.add('show'); }
