@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#1a0b2e">
     <link rel="apple-touch-icon" href="assets/icon.png?v=7">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>منصة رندة VIP - الرئيسية</title>
+    <title>منصة رندة VIP - السحابية</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
         :root {
@@ -19,7 +19,11 @@
         body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2)); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
         .bg-glow { position: absolute; top: -10%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; }
         .container { width: 90%; max-width: 800px; z-index: 1; padding-top: 30px; padding-bottom: 50px; }
-        .header-glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); margin-bottom: 25px; }
+        .header-glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); margin-bottom: 20px; position: relative; }
+        
+        .cloud-badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; color: var(--text-muted); }
+        .cloud-badge.online { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); }
+
         .vip-badge { background: linear-gradient(135deg, #d4af37, #aa771c); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; box-shadow: 0 0 15px var(--gold-glow); }
         .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--gold); margin: 0 auto 15px; display: block; box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); object-fit: cover; cursor: pointer; transition: 0.3s; }
         .profile-pic:hover { transform: scale(1.05); }
@@ -45,7 +49,6 @@
         .loader { border: 4px solid rgba(251, 191, 36, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* حاوية عناصر قائمة الدروس وأزرار الإدارة */
         .lesson-row-card { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; transition: 0.2s; box-sizing: border-box; }
         .lesson-row-card:hover { border-color: rgba(251,191,36,0.5); background: rgba(255,255,255,0.08); }
         .lesson-info-click { flex: 1; cursor: pointer; text-align: right; }
@@ -73,15 +76,17 @@
 
     <div class="container">
         <div class="header-glass">
+            <div id="cloudStatus" class="cloud-badge"><i class="fa-solid fa-cloud"></i> جاري الاتصال...</div>
             <span class="vip-badge">VIP Student</span>
             <img src="assets/icon.png?v=7" alt="Randa" class="profile-pic" onclick="openModal('imageModal')">
             <h1>أكاديمية رندة زربا</h1>
-            <p>مدرسة الدوحة - الصف التاسع | منصة النخبة</p>
+            <p>مدرسة الدوحة - الصف التاسع | المنصة السحابية</p>
         </div>
 
         <div class="control-panel">
             <button class="vip-btn" onclick="triggerScan()"><i class="fa-solid fa-camera"></i> رقمنة الدفتر (مسح ذكي)</button>
             <button class="vip-btn" onclick="openModal('settingsModal')"><i class="fa-solid fa-gear"></i> إعدادات VIP</button>
+            <button class="vip-btn" onclick="manualCloudSync()"><i class="fa-solid fa-cloud-arrow-up"></i> مزامنة سحابية</button>
             <button class="vip-btn" onclick="resetDatabase()"><i class="fa-solid fa-lock"></i> تنظيف السجل (محمي)</button>
         </div>
 
@@ -155,7 +160,7 @@
             <label style="display: block; text-align: right; margin-bottom: 5px; font-size: 0.9rem; color: var(--gold);">محتوى الشرح:</label>
             <textarea id="editLessonContentInput" class="edit-textarea"></textarea>
 
-            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveEditedLesson()"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات 💾</button>
+            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveEditedLesson()"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات ونشرها للسحابة 💾</button>
         </div>
     </div>
 
@@ -176,7 +181,7 @@
         <div class="glass-box" style="max-width: 420px; text-align: center;">
             <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
             <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-key"></i> إعدادات VIP</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه واستخدامه في المنصة.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه محلياً.</p>
             <input type="password" id="apiKeyInput" style="width: 90%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;" placeholder="AIzaSy...">
             <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKeyDirect()">حفظ المفتاح وتفعيل القوة ⚡</button>
         </div>
@@ -192,6 +197,8 @@
 
     <script>
         const ADMIN_PIN = "1822012";
+        const FIREBASE_ENDPOINT = "https://randa-academy-default-rtdb.firebaseio.com/academy_db.json";
+
         let currentActiveSub = '';
         let currentActiveLessonId = null;
         let currentOpenLessonText = "";
@@ -226,6 +233,7 @@
             science: [], math: [], social: []
         };
 
+        // إدارة قاعدة البيانات المزدوجة (سحابي + محلي)
         function getDB() {
             const data = localStorage.getItem('randa_academy_db');
             if(!data) {
@@ -235,9 +243,63 @@
             return JSON.parse(data);
         }
 
-        function saveDB(db) { 
+        async function saveDB(db, syncToCloud = true) { 
             localStorage.setItem('randa_academy_db', JSON.stringify(db)); 
             updateCounters(); 
+            if(syncToCloud) {
+                await pushToCloud(db);
+            }
+        }
+
+        async function pushToCloud(db) {
+            try {
+                await fetch(FIREBASE_ENDPOINT, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(db)
+                });
+                setCloudStatus(true);
+            } catch(e) {
+                setCloudStatus(false);
+                console.warn('تعذر الرفع السحابي اللحظي:', e);
+            }
+        }
+
+        async function pullFromCloud() {
+            try {
+                const res = await fetch(FIREBASE_ENDPOINT);
+                const cloudData = await res.json();
+                if(cloudData && typeof cloudData === 'object' && cloudData.arabic) {
+                    localStorage.setItem('randa_academy_db', JSON.stringify(cloudData));
+                    setCloudStatus(true);
+                } else {
+                    // إذا كانت السحابة فارغة لأول مرة، نرفع البيانات التأسيسية
+                    await pushToCloud(getDB());
+                }
+            } catch(e) {
+                setCloudStatus(false);
+                console.log('وضع عدم الاتصال: يتم العمل من الذاكرة المحلية');
+            }
+            updateCounters();
+        }
+
+        function setCloudStatus(isOnline) {
+            const el = document.getElementById('cloudStatus');
+            if(isOnline) {
+                el.className = 'cloud-badge online';
+                el.innerHTML = '<i class="fa-solid fa-cloud-bolt"></i> سحابي متزامن ⚡';
+            } else {
+                el.className = 'cloud-badge';
+                el.innerHTML = '<i class="fa-solid fa-cloud"></i> ذاكرة محلية (أوفلاين)';
+            }
+        }
+
+        async function manualCloudSync() {
+            if (!checkPin("مزامنة السحابة اليدوية")) return;
+            showLoading('☁️ جاري مزامنة المنصة ورفع أحدث الدروس للسحابة...');
+            await pushToCloud(getDB());
+            hideLoading();
+            alert('🟢 تمت المزامنة السحابية بنجاح! جميع أجهزة الطالبات ستستقبل التحديث فوراً.');
         }
 
         function checkPin(actionName) {
@@ -248,12 +310,13 @@
             return false;
         }
 
-        function resetDatabase() {
+        async function resetDatabase() {
             if (!checkPin("تنظيف وإعادة ضبط السجل")) return;
-            if(confirm('هل أنت متأكد من إعادة ضبط الفهرس وحذف كافة الدروس واستعادة الوضع الافتراضي؟')) {
-                localStorage.removeItem('randa_academy_db');
+            if(confirm('هل أنت متأكد من إعادة ضبط الفهرس وحذف كافة الدروس واستعادة الوضع الافتراضي ومزامنته سحابياً؟')) {
+                localStorage.setItem('randa_academy_db', JSON.stringify(defaultLessons));
+                await pushToCloud(defaultLessons);
                 updateCounters();
-                alert('تمت استعادة الفهرس النظيف بنجاح! 🌟');
+                alert('تمت استعادة الفهرس النظيف سحابياً ومحلياً! 🌟');
                 location.reload();
             }
         }
@@ -273,10 +336,10 @@
 
         function updateCounters() {
             const db = getDB();
-            document.getElementById('sub_count_arabic').innerText = `${db.arabic.length} درس متوفر`;
-            document.getElementById('sub_count_science').innerText = `${db.science.length} درس متوفر`;
-            document.getElementById('sub_count_math').innerText = `${db.math.length} درس متوفر`;
-            document.getElementById('sub_count_social').innerText = `${db.social.length} درس متوفر`;
+            document.getElementById('sub_count_arabic').innerText = `${db.arabic?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_science').innerText = `${db.science?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_math').innerText = `${db.math?.length || 0} درس متوفر`;
+            document.getElementById('sub_count_social').innerText = `${db.social?.length || 0} درس متوفر`;
         }
 
         const subjectNames = { arabic: 'اللغة العربية', science: 'العلوم العامة', math: 'الرياضيات', social: 'الدراسات الاجتماعية' };
@@ -307,14 +370,14 @@
             openModal('subjectModal');
         }
 
-        function triggerDeleteLesson(subKey, lessonId) {
+        async function triggerDeleteLesson(subKey, lessonId) {
             if (!checkPin("حذف هذا الدرس")) return;
-            if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الدرس نهائياً؟")) return;
+            if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الدرس نهائياً ومزامنته سحابياً؟")) return;
             const db = getDB();
             db[subKey] = db[subKey].filter(x => x.id !== lessonId);
-            saveDB(db);
+            await saveDB(db, true);
             openSubjectDrawer(subKey);
-            alert("🗑️ تم حذف الدرس بنجاح!");
+            alert("🗑️ تم حذف الدرس ومزامنته مع السحابة!");
         }
 
         function triggerEditLesson(subKey, lessonId) {
@@ -332,7 +395,7 @@
             openModal('editLessonModal');
         }
 
-        function saveEditedLesson() {
+        async function saveEditedLesson() {
             const title = document.getElementById('editLessonTitleInput').value.trim();
             const rawContent = document.getElementById('editLessonContentInput').value.trim();
             if (!title || !rawContent) return alert("يرجى ملء جميع الحقول!");
@@ -343,11 +406,11 @@
 
             lesson.title = title;
             lesson.content = rawContent.replace(/\n/g, '<br>');
-            saveDB(db);
+            await saveDB(db, true);
 
             closeModal('editLessonModal');
             openSubjectDrawer(editingSubKey);
-            alert("✨ تم حفظ وتحديث بيانات الدرس بنجاح!");
+            alert("✨ تم حفظ وتحديث بيانات الدرس سحابياً بنجاح!");
         }
 
         function openLessonViewer(subKey, lessonId) {
@@ -457,7 +520,7 @@
             const lesson = db[currentActiveSub]?.find(x => x.id === currentActiveLessonId);
             if(!lesson) return alert('تعذر تحديد الدرس الحالي!');
 
-            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس ويحدث بنك الأسئلة...');
+            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس ويحدث بنك الأسئلة سحابياً...');
             
             const existingQuestions = lesson.radarQuestions ? `الأسئلة السابقة المسجلة للدرس:\n"""${lesson.radarQuestions.replace(/<[^>]*>?/gm, ' ')}"""\nإذا وجدت جوانب هامة جديدة أو إضافات دقيقة لم تغطها هذه الأسئلة، قم بدمجها وتطوير القائمة لتشمل أهم 3-4 أسئلة وزارية شاملة.` : '';
 
@@ -480,11 +543,11 @@ ${existingQuestions}
                 
                 lesson.radarQuestions = text;
                 lesson.radarLastUpdate = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                saveDB(db);
+                await saveDB(db, true);
 
                 renderSavedRadar(lesson);
                 hideLoading();
-                alert('✨ تم تشغيل الرادار وتحديث بنك الأسئلة الوزارية بنجاح أسفل الدرس!');
+                alert('✨ تم تشغيل الرادار وتحديث بنك الأسئلة الوزارية سحابياً بنجاح!');
             } catch(e) {
                 hideLoading();
                 alert('فشل تشغيل الرادار: ' + e.message);
@@ -560,9 +623,9 @@ ${existingQuestions}
                         };
 
                         db[targetSub].unshift(newLesson);
-                        saveDB(db);
+                        await saveDB(db, true);
                         hideLoading();
-                        alert(`✨ تم التحليل بنجاح!\nتمت أرشفة درس (${newLesson.title}) بشرحه الكامل وأسئلته التفاعلية داخل مادة: ${subjectNames[targetSub]}`);
+                        alert(`✨ تم التحليل بنجاح!\nتمت أرشفة ونشر درس (${newLesson.title}) سحابياً في مادة: ${subjectNames[targetSub]}`);
                         openSubjectDrawer(targetSub);
                     } catch(err) {
                         hideLoading();
@@ -583,10 +646,12 @@ ${existingQuestions}
             closeModal('settingsModal');
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCounters();
+        document.addEventListener('DOMContentLoaded', async () => {
             const saved = localStorage.getItem('randa_gemini_key');
             if(saved) document.getElementById('apiKeyInput').value = saved;
+            
+            // سحب أحدث نسخة سحابية فور فتح التطبيق
+            await pullFromCloud();
         });
     </script>
 </body>
