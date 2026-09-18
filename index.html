@@ -38,10 +38,10 @@
         .title { font-weight: bold; font-size: 1.1rem; display: block; }
         .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: block; }
 
-        .modal { display: none; position: fixed; z-index: 9999; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 15px; }
-        .modal.show { display: flex; }
+        .modal { display: none; position: fixed; z-index: 9999; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 15px; }
+        .modal.show { display: flex !important; }
         .glass-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; width: 100%; max-width: 650px; position: relative; max-height: 85vh; overflow-y: auto; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .close-btn { position: absolute; top: 15px; right: 20px; color: var(--gold); font-size: 30px; font-weight: bold; cursor: pointer; }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: var(--gold); font-size: 30px; font-weight: bold; cursor: pointer; z-index: 10; }
         .loader { border: 4px solid rgba(251, 191, 36, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -52,6 +52,10 @@
         .opt-btn.correct { background: #16a34a !important; border-color: #22c55e; }
         .opt-btn.wrong { background: #dc2626 !important; border-color: #ef4444; }
         .radar-top-btn { background: var(--gold); color: #000; border: none; padding: 8px 16px; border-radius: 10px; font-weight: bold; font-family: 'Tajawal'; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+        /* صندوق أسئلة الرادار المحفوظة داخل الدرس */
+        .radar-saved-box { margin-top: 25px; background: rgba(251, 191, 36, 0.05); border: 1.5px dashed var(--gold); border-radius: 15px; padding: 18px; text-align: right; }
+        .radar-saved-title { color: var(--gold); font-size: 1.15rem; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -110,33 +114,34 @@
     <div id="lessonViewerModal" class="modal" onclick="if(event.target==this) closeModal('lessonViewerModal')">
         <div class="glass-box" style="max-width: 750px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 12px; margin-bottom: 15px;">
-                <button class="radar-top-btn" onclick="launchViewerRadar()"><i class="fa-solid fa-crosshairs"></i> رادار الدرس</button>
+                <button class="radar-top-btn" onclick="launchViewerRadar()"><i class="fa-solid fa-crosshairs"></i> رادار الدرس وتحديث الأسئلة</button>
                 <span class="close-btn" style="position: static;" onclick="closeModal('lessonViewerModal')">&times;</span>
             </div>
             <h2 id="viewLessonTitle" style="color: var(--gold); margin: 0 0 5px 0;"></h2>
             <div id="viewLessonDate" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;"></div>
             <div id="viewLessonBody" style="line-height: 1.9; font-size: 1.1rem; text-align: right; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;"></div>
             
+            <!-- قسم تحدي الأسئلة الأساسية -->
             <h3 style="color: var(--gold); margin-top: 25px;"><i class="fa-solid fa-circle-question"></i> تحدي الأسئلة التفاعلي</h3>
             <div id="viewLessonQuiz"></div>
+
+            <!-- قسم أسئلة الرادار المحفوظة والتراكمية -->
+            <div id="savedRadarSection" class="radar-saved-box" style="display: none;">
+                <div class="radar-saved-title">
+                    <span><i class="fa-solid fa-crosshairs"></i> بنك توقعات الرادار الوزارية المعتمدة:</span>
+                    <span id="radarSavedDate" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                </div>
+                <div id="savedRadarContent" style="line-height: 1.8; font-size: 1rem; color: #f1f5f9;"></div>
+            </div>
         </div>
     </div>
 
-    <!-- نافذة رادار التوقعات -->
-    <div id="radarModal" class="modal" onclick="if(event.target==this) closeModal('radarModal')">
-        <div class="glass-box">
-            <span class="close-btn" onclick="closeModal('radarModal')">&times;</span>
-            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-crosshairs"></i> رادار التوقعات الحصري</h2>
-            <div id="radarResultBody" style="line-height: 1.8; text-align: right; margin-top: 15px;"></div>
-        </div>
-    </div>
-
-    <!-- نافذة الصورة التفاعلية -->
-    <div id="imageModal" class="modal" onclick="if(event.target==this) closeModal('imageModal')" style="display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;">
-        <span class="close-btn" onclick="closeModal('imageModal')">&times;</span>
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 90%;">
-            <img style="max-width: 100%; max-height: 60vh; border-radius: 18px; border: 3px solid var(--gold); box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); object-fit: contain;" src="assets/full-pic.jpg" alt="Randa">
-            <div style="margin-top: 18px; color: #fff; font-size: 1.25rem; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.8); line-height: 1.6;">
+    <!-- نافذة صورة رندة التفاعلية -->
+    <div id="imageModal" class="modal" onclick="if(event.target==this) closeModal('imageModal')">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 90%; position: relative;">
+            <span class="close-btn" onclick="closeModal('imageModal')" style="top: -40px; right: 0;">&times;</span>
+            <img style="max-width: 100%; max-height: 60vh; border-radius: 18px; border: 3px solid var(--gold); box-shadow: 0 0 35px rgba(251, 191, 36, 0.5); object-fit: contain;" src="assets/full-pic.jpg" alt="Randa">
+            <div style="margin-top: 18px; color: #fff; font-size: 1.25rem; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.8); line-height: 1.6; text-align: center;">
                 أهلاً وسهلاً.. نوّرتوا منصة رندة التعليمية 👑✨🌸<br>
                 <span style="font-size: 0.95rem; color: var(--gold); font-weight: 600;">طريق التفوق والمركز الأول دائماً 🌟📚</span>
             </div>
@@ -164,7 +169,8 @@
     </div>
 
     <script>
-        const MODEL_NAME = 'gemini-3.6-flash';
+        let currentActiveSub = '';
+        let currentActiveLessonId = null;
         let currentOpenLessonText = "";
 
         const defaultLessons = {
@@ -186,7 +192,9 @@
                         { q: "ما هو المعنى المعجمي الدقيق لكلمة 'يَزْهُو'؟", options: ["يفتخر ويزدان", "يتواضع وينحني", "يخبو نوره"], ans: 0 },
                         { q: "ما الجمال في قول الشاعر 'يزهو بك العرش'؟", options: ["تصوير العرش بإنسان يفتخر ويفرح", "تشبيه العرش بجبل شامخ", "كناية عن سعة القصر"], ans: 0 },
                         { q: "ما الفكرة المحورية التي تركز عليها القصيدة؟", options: ["الاعتزاز بالقيادة ورفعة الوطن", "وصف المعارك الحربية", "الحنين إلى الماضي"], ans: 0 }
-                    ]
+                    ],
+                    radarQuestions: null,
+                    radarLastUpdate: null
                 }
             ],
             science: [], math: [], social: []
@@ -215,8 +223,16 @@
             }
         }
 
-        function openModal(id) { document.getElementById(id).classList.add('show'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.add('show'); 
+        }
+
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.remove('show'); 
+        }
+
         function showLoading(msg) { document.getElementById('loadingText').innerText = msg; openModal('loadingModal'); }
         function hideLoading() { closeModal('loadingModal'); }
 
@@ -229,10 +245,9 @@
         }
 
         const subjectNames = { arabic: 'اللغة العربية', science: 'العلوم العامة', math: 'الرياضيات', social: 'الدراسات الاجتماعية' };
-        let activeSubjectKey = '';
 
         function openSubjectDrawer(subKey) {
-            activeSubjectKey = subKey;
+            currentActiveSub = subKey;
             const db = getDB();
             const list = db[subKey] || [];
             document.getElementById('subjectModalTitle').innerHTML = `فهرس دروس: ${subjectNames[subKey]}`;
@@ -245,7 +260,7 @@
                     <div class="lesson-item-btn" onclick="openLessonViewer('${subKey}', ${l.id})">
                         <div>
                             <strong style="color: var(--gold); display: block; font-size: 1.05rem;">${l.title}</strong>
-                            <small style="color: var(--text-muted);">${l.date}</small>
+                            <small style="color: var(--text-muted);">${l.date} ${l.radarQuestions ? ' • 🎯 تم الرصد' : ''}</small>
                         </div>
                         <i class="fa-solid fa-chevron-left" style="color: var(--gold);"></i>
                     </div>
@@ -255,6 +270,9 @@
         }
 
         function openLessonViewer(subKey, lessonId) {
+            currentActiveSub = subKey;
+            currentActiveLessonId = lessonId;
+
             const db = getDB();
             const lesson = db[subKey].find(x => x.id === lessonId);
             if(!lesson) return;
@@ -264,6 +282,7 @@
             document.getElementById('viewLessonDate').innerText = `${subjectNames[subKey]} | ${lesson.date}`;
             document.getElementById('viewLessonBody').innerHTML = lesson.content;
             
+            // عرض الكويز التفاعلي
             const qContainer = document.getElementById('viewLessonQuiz');
             if(lesson.quiz && lesson.quiz.length > 0) {
                 qContainer.innerHTML = lesson.quiz.map((item, qIdx) => `
@@ -277,9 +296,26 @@
             } else {
                 qContainer.innerHTML = `<p style="color: var(--text-muted);">لا توجد أسئلة مدمجة لهذا الدرس.</p>`;
             }
+
+            // عرض توقعات الرادار المحفوظة إن وجدت
+            renderSavedRadar(lesson);
             
             closeModal('subjectModal');
             openModal('lessonViewerModal');
+        }
+
+        function renderSavedRadar(lesson) {
+            const sec = document.getElementById('savedRadarSection');
+            const cont = document.getElementById('savedRadarContent');
+            const dateSpan = document.getElementById('radarSavedDate');
+
+            if(lesson && lesson.radarQuestions) {
+                cont.innerHTML = lesson.radarQuestions;
+                dateSpan.innerText = lesson.radarLastUpdate ? `(آخر تحديث: ${lesson.radarLastUpdate})` : '';
+                sec.style.display = 'block';
+            } else {
+                sec.style.display = 'none';
+            }
         }
 
         function checkAnswer(btn, selected, correct) {
@@ -294,7 +330,7 @@
             }
         }
 
-        // محرك استدعاء ذكي مع التبديل التلقائي عند الضغط
+        // دالة استدعاء Gemini مع إعادة المحاولة التلقائية
         async function callGemini(apiKey, contentsPayload, retries = 2) {
             const modelsToTry = ['gemini-3.6-flash', 'gemini-2.0-flash'];
             let lastError = null;
@@ -313,7 +349,6 @@
                         const data = await res.json();
                         
                         if (data.error) {
-                            // إذا كان الخطأ ضغط مؤقت (503 / High demand)، ننتظر ثانية ونعيد المحاولة
                             if (data.error.message && data.error.message.includes('high demand')) {
                                 await new Promise(r => setTimeout(r, 1200));
                                 continue;
@@ -329,31 +364,48 @@
                     }
                 }
             }
-            throw lastError || new Error('السيرفرات تشهد ضغطاً عالياً حالياً، أعد المحاولة بعد لحظات.');
+            throw lastError || new Error('السيرفرات تشهد ضغطاً حالياً، أعد المحاولة بعد قليل.');
         }
 
+        // تشغيل الرادار وحفظ أو تحديث الأسئلة تلقائياً داخل الدرس
         async function launchViewerRadar() {
             const apiKey = localStorage.getItem('randa_gemini_key');
             if(!apiKey) return alert('يرجى حفظ المفتاح من الإعدادات أولاً!');
-            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس بدقة أكاديمية...');
+
+            const db = getDB();
+            const lesson = db[currentActiveSub]?.find(x => x.id === currentActiveLessonId);
+            if(!lesson) return alert('تعذر تحديد الدرس الحالي!');
+
+            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس ويحدث بنك الأسئلة...');
             
+            const existingQuestions = lesson.radarQuestions ? `الأسئلة السابقة المسجلة للدرس:\n"""${lesson.radarQuestions.replace(/<[^>]*>?/gm, ' ')}"""\nإذا وجدت جوانب هامة جديدة أو إضافات دقيقة لم تغطها هذه الأسئلة، قم بدمجها وتطوير القائمة لتشمل أهم 3-4 أسئلة وزارية شاملة.` : '';
+
             const prompt = `أنت رادار امتحانات خبير متخصص في المنهاج الفلسطيني للصف التاسع، ومساعد للطالبة رندة.
 محتوى الدرس المدرسي الحصري:
 """${currentOpenLessonText.replace(/<[^>]*>?/gm, ' ')}"""
 
+${existingQuestions}
+
 المهمة:
-حلل هذا المحتوى بدقة واستخرج 3 أسئلة امتحانية نموذجية مع إجاباتها الكاملة وفق المعايير الوزارية:
+حلل هذا المحتوى بدقة واستخرج أهم 3 أسئلة امتحانية نموذجية مع إجاباتها الكاملة وفق المعايير الوزارية:
 🔴 [سؤال وزاري حتمي]: يختبر الفهم العميق والتحليل.
 🟡 [كمين امتحاني / فكرة دقيقة]: يركز على نقطة يسهو عنها الطلاب مع كشف طريقة الإجابة الصحيحة.
 🟢 [سؤال مباشر ومضمون]: يختبر الحقائق والمفاهيم الأساسية.
 
-التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم markdown.`;
+التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br> و <ul> و <li>) بدون أي وسوم markdown.`;
 
             try {
                 const text = await callGemini(apiKey, [{ parts: [{ text: prompt }] }]);
-                document.getElementById('radarResultBody').innerHTML = text;
+                
+                // تحديث بيانات الدرس في قاعدة البيانات المحلية
+                lesson.radarQuestions = text;
+                lesson.radarLastUpdate = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                saveDB(db);
+
+                // تحديث الواجهة مباشرة
+                renderSavedRadar(lesson);
                 hideLoading();
-                openModal('radarModal');
+                alert('✨ تم تشغيل الرادار وتحديث بنك الأسئلة الوزارية بنجاح أسفل الدرس!');
             } catch(e) {
                 hideLoading();
                 alert('فشل تشغيل الرادار: ' + e.message);
@@ -423,7 +475,9 @@
                             title: parsed.title || "درس جديد بدون عنوان",
                             date: new Date().toLocaleDateString('ar-EG'),
                             content: parsed.content || "لا يوجد محتوى مستخرج.",
-                            quiz: parsed.quiz || []
+                            quiz: parsed.quiz || [],
+                            radarQuestions: null,
+                            radarLastUpdate: null
                         };
 
                         db[targetSub].unshift(newLesson);
