@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        const MODELS_PRIORITY = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+        const MODEL_NAME = 'gemini-3.6-flash';
         let currentOpenLessonText = "";
 
         const defaultLessons = {
@@ -290,28 +290,21 @@
         }
 
         // محرك استدعاء ذكي مع التبديل التلقائي عند الضغط
-        async function fetchGeminiWithFallback(apiKey, contentsPayload) {
-            let lastError = null;
-            for (const model of MODELS_PRIORITY) {
-                try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: contentsPayload })
-                    });
-                    const data = await res.json();
-                    if (data.error) {
-                        lastError = new Error(data.error.message || `خطأ في ${model}`);
-                        continue; // تجربة النموذج البديل فوراً
-                    }
-                    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                        return data.candidates[0].content.parts[0].text;
-                    }
-                } catch(e) {
-                    lastError = e;
-                }
+        async function callGemini(apiKey, contentsPayload) {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-goog-api-key': apiKey 
+                },
+                body: JSON.stringify({ contents: contentsPayload })
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                throw new Error('لم تصل استجابة من النموذج، أعد المحاولة.');
             }
-            throw lastError || new Error('تعذر الوصول إلى خدمات الذكاء الاصطناعي حالياً، يرجى المحاولة بعد قليل.');
+            return data.candidates[0].content.parts[0].text;
         }
 
         async function launchViewerRadar() {
@@ -332,7 +325,7 @@
 التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم markdown.`;
 
             try {
-                const text = await fetchGeminiWithFallback(apiKey, [{ parts: [{ text: prompt }] }]);
+                const text = await callGemini(apiKey, [{ parts: [{ text: prompt }] }]);
                 document.getElementById('radarResultBody').innerHTML = text;
                 hideLoading();
                 openModal('radarModal');
@@ -394,7 +387,7 @@
 }`;
 
                     try {
-                        const rawText = await fetchGeminiWithFallback(apiKey, [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }]);
+                        const rawText = await callGemini(apiKey, [{ parts: [{ text: prompt }, { inlineData: { mimeType: 'image/jpeg', data: base64 } }] }]);
                         let raw = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
                         const parsed = JSON.parse(raw);
 
@@ -435,7 +428,7 @@
             note.innerText = '';
 
             try {
-                await fetchGeminiWithFallback(key, [{ parts: [{ text: 'اختبار الاتصال السريع' }] }]);
+                await callGemini(key, [{ parts: [{ text: 'اختبار الاتصال السريع' }] }]);
                 localStorage.setItem('randa_gemini_key', key);
                 note.style.color = '#4ade80';
                 note.innerText = '🟢 المفتاح يعمل بنجاح 100%! تم الحفظ.';
