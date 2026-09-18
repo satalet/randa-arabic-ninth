@@ -1,4 +1,4 @@
-const CACHE_VERSION = '1789759786';
+const CACHE_VERSION = '1789759974';
 const CACHE_NAME = 'randa-pwa-v' + CACHE_VERSION;
 const urlsToCache = ['./', './index.html', './manifest.json', './arabic_lesson1.html'];
 

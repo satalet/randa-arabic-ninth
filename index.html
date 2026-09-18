@@ -290,21 +290,41 @@
         }
 
         // محرك استدعاء ذكي مع التبديل التلقائي عند الضغط
-        async function callGemini(apiKey, contentsPayload) {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-goog-api-key': apiKey 
-                },
-                body: JSON.stringify({ contents: contentsPayload })
-            });
-            const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
-            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-                throw new Error('لم تصل استجابة من النموذج، أعد المحاولة.');
+        async function callGemini(apiKey, contentsPayload, retries = 2) {
+            const modelsToTry = ['gemini-3.6-flash', 'gemini-2.0-flash'];
+            let lastError = null;
+
+            for (const model of modelsToTry) {
+                for (let attempt = 0; attempt <= retries; attempt++) {
+                    try {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-goog-api-key': apiKey 
+                            },
+                            body: JSON.stringify({ contents: contentsPayload })
+                        });
+                        const data = await res.json();
+                        
+                        if (data.error) {
+                            // إذا كان الخطأ ضغط مؤقت (503 / High demand)، ننتظر ثانية ونعيد المحاولة
+                            if (data.error.message && data.error.message.includes('high demand')) {
+                                await new Promise(r => setTimeout(r, 1200));
+                                continue;
+                            }
+                            throw new Error(data.error.message);
+                        }
+
+                        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                            return data.candidates[0].content.parts[0].text;
+                        }
+                    } catch(err) {
+                        lastError = err;
+                    }
+                }
             }
-            return data.candidates[0].content.parts[0].text;
+            throw lastError || new Error('السيرفرات تشهد ضغطاً عالياً حالياً، أعد المحاولة بعد لحظات.');
         }
 
         async function launchViewerRadar() {
