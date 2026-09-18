@@ -331,40 +331,44 @@
         }
 
         // دالة استدعاء Gemini مع إعادة المحاولة التلقائية
-        async function callGemini(apiKey, contentsPayload, retries = 2) {
-            const modelsToTry = ['gemini-3.6-flash', 'gemini-2.0-flash'];
+        async function callGemini(apiKey, contentsPayload, maxRetries = 2) {
+            const TARGET_MODEL = 'gemini-3.6-flash';
             let lastError = null;
 
-            for (const model of modelsToTry) {
-                for (let attempt = 0; attempt <= retries; attempt++) {
-                    try {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'X-goog-api-key': apiKey 
-                            },
-                            body: JSON.stringify({ contents: contentsPayload })
-                        });
-                        const data = await res.json();
-                        
-                        if (data.error) {
-                            if (data.error.message && data.error.message.includes('high demand')) {
-                                await new Promise(r => setTimeout(r, 1200));
-                                continue;
-                            }
-                            throw new Error(data.error.message);
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TARGET_MODEL}:generateContent`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-goog-api-key': apiKey 
+                        },
+                        body: JSON.stringify({ contents: contentsPayload })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.error) {
+                        if (data.error.message && data.error.message.includes('high demand') && attempt < maxRetries) {
+                            await new Promise(r => setTimeout(r, 1500));
+                            continue;
                         }
-
-                        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                            return data.candidates[0].content.parts[0].text;
-                        }
-                    } catch(err) {
-                        lastError = err;
+                        throw new Error(data.error.message);
                     }
+
+                    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    throw new Error('لم تصل استجابة واضحة من النموذج');
+                } catch(err) {
+                    lastError = err;
+                    if (err.message && err.message.includes('high demand') && attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, 1500));
+                        continue;
+                    }
+                    throw err;
                 }
             }
-            throw lastError || new Error('السيرفرات تشهد ضغطاً حالياً، أعد المحاولة بعد قليل.');
+            throw lastError;
         }
 
         // تشغيل الرادار وحفظ أو تحديث الأسئلة تلقائياً داخل الدرس
