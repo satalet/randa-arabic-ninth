@@ -15,6 +15,7 @@
             --gold: #fbbf24; --gold-glow: rgba(251, 191, 36, 0.4);
             --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc; --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
         }
         body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2)); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
         .bg-glow { position: absolute; top: -10%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; }
@@ -30,24 +31,76 @@
         .header-glass h1 { margin: 0; font-size: 2rem; font-weight: 900; color: #fff; }
         .header-glass p { margin: 8px 0 0; color: var(--text-muted); font-size: 1rem; }
 
+        /* شريط التنبيهات الملكي المزدوج */
         .broadcast-card {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(15, 23, 42, 0.7));
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 27, 75, 0.7));
             border: 1.5px solid var(--gold);
-            border-radius: 16px;
-            padding: 12px 16px;
+            border-radius: 18px;
+            padding: 14px 18px;
             margin-bottom: 20px;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.2);
+            position: relative;
+        }
+        .broadcast-top-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            box-shadow: 0 0 25px rgba(251, 191, 36, 0.2);
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
         }
-        .broadcast-content { display: flex; align-items: center; gap: 12px; text-align: right; flex: 1; }
-        .broadcast-icon { font-size: 1.4rem; color: var(--gold); }
-        .broadcast-text { font-size: 0.95rem; line-height: 1.5; color: #f8fafc; font-weight: 500; }
-        .broadcast-date { display: block; font-size: 0.75rem; color: var(--gold); margin-top: 3px; }
-        .broadcast-edit-btn { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--gold); border-radius: 8px; padding: 6px 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .broadcast-fixed-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+        .broadcast-icon { font-size: 1.25rem; color: var(--gold); }
+        .broadcast-edit-btn { background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); border-radius: 8px; padding: 5px 11px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; font-family: 'Tajawal'; font-weight: bold; }
         .broadcast-edit-btn:hover { background: var(--gold); color: #000; }
+
+        /* خانة ملاحظة رندة المستقلة والملفتة */
+        .randa-special-container {
+            margin-top: 12px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(139, 92, 246, 0.15));
+            border: 1.5px dashed var(--accent-cyan);
+            border-radius: 14px;
+            padding: 12px 16px;
+            text-align: right;
+            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.08);
+        }
+        .randa-tag-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .randa-badge-title {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.5px;
+        }
+        .randa-note-content {
+            color: #e0f2fe;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-top: 5px;
+            word-break: break-word;
+        }
+        .randa-note-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
 
         .control-panel { background: rgba(0,0,0,0.25); border: 1px solid var(--gold); border-radius: 20px; padding: 15px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
         .vip-btn { background: linear-gradient(135deg, #1e293b, #0f172a); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 15px; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; flex: 1 1 calc(50% - 10px); min-width: 130px; justify-content: center; }
@@ -86,7 +139,7 @@
         .radar-saved-title { color: var(--gold); font-size: 1.15rem; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
         
         .edit-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; margin-bottom: 12px; box-sizing: border-box; }
-        .edit-textarea { width: 100%; height: 180px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; line-height: 1.6; resize: vertical; box-sizing: border-box; }
+        .edit-textarea { width: 100%; height: 140px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; line-height: 1.6; resize: vertical; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -102,15 +155,25 @@
             <p>مدرسة الدوحة - الصف التاسع | المنصة السحابية</p>
         </div>
 
+        <!-- شريط التنبيهات المطور: عبارة ثابتة + خانة ملفتة لملاحظات رندة -->
         <div class="broadcast-card" id="broadcastCard">
-            <div class="broadcast-content">
-                <i class="fa-solid fa-bullhorn broadcast-icon"></i>
-                <div>
-                    <div class="broadcast-text" id="broadcastText">أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚</div>
-                    <span class="broadcast-date" id="broadcastDate">منصة رندة الرسمية</span>
+            <div class="broadcast-top-row">
+                <div class="broadcast-fixed-title">
+                    <i class="fa-solid fa-bullhorn broadcast-icon"></i>
+                    <span>أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚</span>
+                </div>
+                <button class="broadcast-edit-btn" title="كتابة أو تعديل ملاحظة رندة (محمي)" onclick="triggerEditBroadcast()"><i class="fa-solid fa-pen"></i> كتابة ملاحظة</button>
+            </div>
+
+            <div class="randa-special-container" id="randaSpecialContainer">
+                <div class="randa-tag-header">
+                    <span class="randa-badge-title"><i class="fa-solid fa-crown"></i> تنبيه رندة المباشر للطالبات</span>
+                    <span class="randa-note-time" id="broadcastDate">الآن</span>
+                </div>
+                <div class="randa-note-content" id="broadcastCustomText">
+                    توقع أهم أسئلة في قصيدة العرش يزهو بالدرس 🎯⚡
                 </div>
             </div>
-            <button class="broadcast-edit-btn" title="تعديل الملاحظة (محمي)" onclick="triggerEditBroadcast()"><i class="fa-solid fa-pen"></i></button>
         </div>
 
         <div class="control-panel">
@@ -145,14 +208,23 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل التنبيه السحابي -->
+    <!-- نافذة كتابة تنبيه رندة المباشر -->
     <div id="editBroadcastModal" class="modal" onclick="if(event.target==this) closeModal('editBroadcastModal')">
-        <div class="glass-box" style="max-width: 500px;">
+        <div class="glass-box" style="max-width: 520px;">
             <span class="close-btn" onclick="closeModal('editBroadcastModal')">&times;</span>
-            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-bullhorn"></i> نشر تنبيه جديد للطالبات</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">اكتبي الملاحظة وستظهر فوراً لجميع الطالبات في أعلى الصفحة.</p>
-            <textarea id="broadcastInput" class="edit-textarea" style="height: 110px;" placeholder="اكتبي التنبيه هنا..."></textarea>
-            <button class="vip-btn" style="width: 100%; margin-top: 15px;" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> نشر فوري للسحابة 📢</button>
+            <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-crown"></i> كتابة تنبيه رندة للطالبات</h2>
+            
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(251,191,36,0.3); padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; color: #cbd5e1; margin-bottom: 15px; text-align: right;">
+                <span style="color: var(--gold); font-weight: bold; display: block; margin-bottom: 3px;">📌 العبارة الترحيبية الثابتة:</span>
+                أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚
+            </div>
+
+            <label style="display: block; text-align: right; color: var(--accent-cyan); font-weight: bold; margin-bottom: 6px; font-size: 0.95rem;">
+                اكتبي ملاحظتكِ أو التنبيه المميز (سيظهر بلون وخط بارز للطالبات):
+            </label>
+            <textarea id="broadcastInput" class="edit-textarea" style="border-color: var(--accent-cyan); color: #f8fafc;" placeholder="مثال: توقع أهم أسئلة في قصيدة العرش يزهو بالدرس.. ركزوا عليها كويس! 🎯"></textarea>
+            
+            <button class="vip-btn" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #0284c7, #0f172a); border-color: var(--accent-cyan); color: #fff;" onclick="saveBroadcast()"><i class="fa-solid fa-paper-plane"></i> نشر فوري لسحابة الطالبات 📢</button>
         </div>
     </div>
 
@@ -249,8 +321,8 @@
 
         const defaultLessons = {
             announcement: {
-                text: "أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚",
-                date: "تنبيه إداري عام"
+                customText: "توقع أهم أسئلة في قصيدة العرش يزهو بالدرس 🎯⚡",
+                date: "تنبيه جديد"
             },
             arabic: [],
             science: [],
@@ -286,7 +358,7 @@
                 setCloudStatus(true);
             } catch(e) {
                 setCloudStatus(false);
-                console.warn('تعذر الرفع السحابي اللحظي:', e);
+                console.warn('تعذر الرفع السحابي:', e);
             }
         }
 
@@ -319,33 +391,52 @@
             }
         }
 
+        // عرض التنبيه المخصص بلون وخط مميز
         function renderAnnouncement(db) {
-            const anno = db.announcement || defaultLessons.announcement;
-            document.getElementById('broadcastText').innerText = anno.text || "";
-            document.getElementById('broadcastDate').innerText = anno.date ? `📢 ${anno.date}` : "";
+            const anno = db.announcement || {};
+            let customText = anno.customText || anno.text || "";
+            
+            // تنظيف النص القديم إن وجد بداخله الجملة الثابتة لتفادي التكرار
+            customText = customText.replace("أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚", "").trim();
+            if(!customText) customText = "توقع أهم أسئلة في قصيدة العرش يزهو بالدرس 🎯⚡";
+
+            document.getElementById('broadcastCustomText').innerText = customText;
+            document.getElementById('broadcastDate').innerText = anno.date ? `📢 ${anno.date}` : "الآن";
         }
 
-        /* إدارة المودالات والتحكم بحركة التاريخ وزر الرجوع بالهاتف */
-        function showModalDOM(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.add('show');
+        function triggerEditBroadcast() {
+            if (!checkPin("كتابة تنبيه مباشر للطالبات")) return;
+            const db = getDB();
+            const anno = db.announcement || {};
+            let currentVal = anno.customText || anno.text || "";
+            currentVal = currentVal.replace("أهلاً بكم في المنصة! انتظروا تنزيل الدروس والتوقعات أولاً بأول ✨📚", "").trim();
+            document.getElementById('broadcastInput').value = currentVal;
+            openModal('editBroadcastModal');
         }
 
-        function hideModalDOM(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('show');
+        async function saveBroadcast() {
+            const text = document.getElementById('broadcastInput').value.trim();
+            if(!text) return alert("الرجاء كتابة نص التنبيه أولاً!");
+
+            const db = getDB();
+            db.announcement = {
+                customText: text,
+                date: `نُشر في: ${new Date().toLocaleDateString('ar-EG')} (${new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})})`
+            };
+
+            showLoading('📢 جاري نشر تنبيه رندة لسحابة الطالبات...');
+            await saveDB(db, true);
+            hideLoading();
+            closeModal('editBroadcastModal');
+            alert('🟢 تم نشر التنبيه المباشر بنجاح! سيظهر بلون بارز لجميع الطالبات فوراً.');
         }
 
-        function hideAllModalsDOM() {
-            document.querySelectorAll('.modal').forEach(m => {
-                if (m.id !== 'loadingModal') m.classList.remove('show');
-            });
-        }
+        function showModalDOM(id) { const el = document.getElementById(id); if (el) el.classList.add('show'); }
+        function hideModalDOM(id) { const el = document.getElementById(id); if (el) el.classList.remove('show'); }
+        function hideAllModalsDOM() { document.querySelectorAll('.modal').forEach(m => { if (m.id !== 'loadingModal') m.classList.remove('show'); }); }
 
         function openModal(id, fromHistory = false) {
-            if (!fromHistory) {
-                history.pushState({ step: 'modal', modalId: id }, "");
-            }
+            if (!fromHistory) history.pushState({ step: 'modal', modalId: id }, "");
             showModalDOM(id);
         }
 
@@ -357,62 +448,24 @@
             }
         }
 
-        // مستمع زر الرجوع بالهاتف (Hardware / Swipe Back Button)
         window.addEventListener('popstate', (e) => {
             const state = e.state;
             hideAllModalsDOM();
-
-            if (!state || state.step === 'home') {
-                // العودة للقائمة الرئيسية (إغلاق كل النوافذ والأدراج)
-                return;
-            }
-
-            if (state.step === 'subject') {
-                // الرجوع لفهرس دروس المادة
-                openSubjectDrawer(state.subKey, true);
-            } else if (state.step === 'lesson') {
-                // فتح الدرس
-                openLessonViewer(state.subKey, state.lessonId, true);
-            } else if (state.step === 'modal') {
-                // إعادة فتح النافذة المنبثقة
-                showModalDOM(state.modalId);
-            }
+            if (!state || state.step === 'home') return;
+            if (state.step === 'subject') openSubjectDrawer(state.subKey, true);
+            else if (state.step === 'lesson') openLessonViewer(state.subKey, state.lessonId, true);
+            else if (state.step === 'modal') showModalDOM(state.modalId);
         });
 
         function showLoading(msg) { document.getElementById('loadingText').innerText = msg; showModalDOM('loadingModal'); }
         function hideLoading() { hideModalDOM('loadingModal'); }
 
-        function triggerEditBroadcast() {
-            if (!checkPin("نشر تنبيه أو ملاحظة عامة للطالبات")) return;
-            const db = getDB();
-            const anno = db.announcement || defaultLessons.announcement;
-            document.getElementById('broadcastInput').value = anno.text || "";
-            openModal('editBroadcastModal');
-        }
-
-        async function saveBroadcast() {
-            const text = document.getElementById('broadcastInput').value.trim();
-            if(!text) return alert("الرجاء كتابة نص التنبيه أولاً!");
-
-            const db = getDB();
-            db.announcement = {
-                text: text,
-                date: `نُشر في: ${new Date().toLocaleDateString('ar-EG')} (${new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})})`
-            };
-
-            showLoading('📢 جاري نشر التنبيه لجميع هواتف الطالبات سحابياً...');
-            await saveDB(db, true);
-            hideLoading();
-            closeModal('editBroadcastModal');
-            alert('🟢 تم نشر التنبيه سحابياً بنجاح! سيظهر لجميع الطالبات فور فتح المنصة.');
-        }
-
         async function manualCloudSync() {
             if (!checkPin("مزامنة السحابة اليدوية")) return;
-            showLoading('☁️ جاري مزامنة المنصة ورفع أحدث الدروس للسحابة...');
+            showLoading('☁️ جاري مزامنة المنصة ورفع أحدث الدروس والتنبيهات...');
             await pushToCloud(getDB());
             hideLoading();
-            alert('🟢 تمت المزامنة السحابية بنجاح! جميع أجهزة الطالبات ستستقبل التحديث فوراً.');
+            alert('🟢 تمت المزامنة السحابية بنجاح!');
         }
 
         function checkPin(actionName) {
@@ -469,9 +522,7 @@
                 `).join('');
             }
 
-            if (!fromHistory) {
-                history.pushState({ step: 'subject', subKey: subKey }, "");
-            }
+            if (!fromHistory) history.pushState({ step: 'subject', subKey: subKey }, "");
             showModalDOM('subjectModal');
         }
 
@@ -548,9 +599,7 @@
             renderSavedRadar(lesson);
             
             hideModalDOM('subjectModal');
-            if (!fromHistory) {
-                history.pushState({ step: 'lesson', subKey: subKey, lessonId: lessonId }, "");
-            }
+            if (!fromHistory) history.pushState({ step: 'lesson', subKey: subKey, lessonId: lessonId }, "");
             showModalDOM('lessonViewerModal');
         }
 
@@ -733,7 +782,7 @@ ${existingQuestions}
                         db[targetSub].unshift(newLesson);
                         
                         db.announcement = {
-                            text: `✨ تم إضافة درس جديد: (${newLesson.title}) في مادة ${subjectNames[targetSub]}!`,
+                            customText: `✨ تم إضافة درس جديد: (${newLesson.title}) في مادة ${subjectNames[targetSub]}! تفقدوا الشرح والأسئلة الآن 🎯`,
                             date: `نُشر في: ${new Date().toLocaleDateString('ar-EG')} (${new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})})`
                         };
 
@@ -761,12 +810,9 @@ ${existingQuestions}
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // تثبيت حالة الصفحة الرئيسية لمنع الخروج المفاجئ
             history.replaceState({ step: 'home' }, "");
-
             const saved = localStorage.getItem('randa_gemini_key');
             if(saved) document.getElementById('apiKeyInput').value = saved;
-            
             await pullFromCloud();
         });
     </script>
