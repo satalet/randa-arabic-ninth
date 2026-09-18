@@ -38,7 +38,6 @@
         .title { font-weight: bold; font-size: 1.1rem; display: block; }
         .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: block; }
 
-        /* Modal Base */
         .modal { display: none; position: fixed; z-index: 9999; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 15px; }
         .modal.show { display: flex; }
         .glass-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; width: 100%; max-width: 650px; position: relative; max-height: 85vh; overflow-y: auto; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
@@ -46,7 +45,6 @@
         .loader { border: 4px solid rgba(251, 191, 36, 0.2); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* الدروس والأسئلة */
         .lesson-item-btn { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: #fff; margin-bottom: 10px; text-align: right; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: 'Tajawal'; }
         .lesson-item-btn:hover { border-color: var(--gold); background: rgba(251,191,36,0.1); }
         .quiz-card { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-top: 15px; }
@@ -58,7 +56,7 @@
 </head>
 <body>
     <div class="bg-glow"></div>
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+    <input type="file" id="cameraInput" accept="image/*" style="display: none;">
 
     <div class="container">
         <div class="header-glass">
@@ -71,6 +69,7 @@
         <div class="control-panel">
             <button class="vip-btn" onclick="triggerScan()"><i class="fa-solid fa-camera"></i> رقمنة الدفتر (مسح ذكي)</button>
             <button class="vip-btn" onclick="openModal('settingsModal')"><i class="fa-solid fa-gear"></i> إعدادات VIP</button>
+            <button class="vip-btn" onclick="resetDatabase()"><i class="fa-solid fa-rotate-left"></i> تنظيف وإعادة ضبط</button>
         </div>
 
         <div class="section-title"><span>📚</span> مكتبة المواد الدراسية</div>
@@ -162,17 +161,26 @@
         const MODEL_NAME = 'gemini-3.6-flash';
         let currentOpenLessonText = "";
 
-        // الأساس المبرمج الأول: درس العرش يزهو
+        // الأساس المبرمج الأول المعتمد لدرس العرش يزهو بشرح أكاديمي دقيق
         const defaultLessons = {
             arabic: [
                 {
                     id: 1,
-                    title: "العرش يزهو",
-                    date: "الدرس الافتتاحي الأساسي",
-                    content: "قصيدة العرش يزهو المقررة للصف التاسع - مدرسة الدوحة:\nيَزْهُو بِكَ العَرْشُ لا بَلْ يَزْهُو بِكَ البَلَدُ... تتناول القصيدة مدح الرسول الكريم ومكانته وفضائله والاعتزاز بالدين والحق.",
+                    title: "قصيدة العرش يزهو",
+                    date: "الدرس الافتتاحي المعتمد",
+                    content: `<b>الفكرة العامة:</b> الاعتزاز بالقيادة ومكانة الوطن، وبيان أثر الشجاعة والعدل في رفعة الأمة.<br><br>
+<b>أهم معاني الكلمات والمفردات:</b><br>
+• <b>يَزْهُو:</b> يفتخر، يزدان، ويتيه بهاءً وجمالاً.<br>
+• <b>العرش:</b> كرسي الملك، ورمز السيادة والمكانة العالية.<br>
+• <b>السَّنَا:</b> الضياء والنور الساطع.<br><br>
+<b>الصور الفنية والجمالية:</b><br>
+• <i>"يزهو بك العرش":</i> شبّه العرش بإنسان يلبس ثوب الفخار والبهجة بوجود قائده العادل.<br><br>
+<b>الدلالة والقيمة المستفادة:</b><br>
+القيادة الرشيدة تستمد قوتها من محبة الشعب والوفاء للحق ونصرة المظلومين.`,
                     quiz: [
-                        { q: "ما الفكرة العامة من قصيدة العرش يزهو؟", options: ["مدح الرسول الكريم ومكانته", "وصف الطبيعة في الأردن", "الفخر بالجيش"], ans: 0 },
-                        { q: "معنى كلمة 'يزهو' الواردة بالنص:", options: ["يفتخر ويتزين", "يحزن ويأسى", "يضعف ويتراجع"], ans: 0 }
+                        { q: "ما هو المعنى المعجمي الدقيق لكلمة 'يَزْهُو'؟", options: ["يفتخر ويزدان", "يتواضع وينحني", "يخبو نوره"], ans: 0 },
+                        { q: "ما الجمال في قول الشاعر 'يزهو بك العرش'؟", options: ["تصوير العرش بإنسان يفتخر ويفرح", "تشبيه العرش بجبل شامخ", "كناية عن سعة القصر"], ans: 0 },
+                        { q: "ما الفكرة المحورية التي تركز عليها القصيدة؟", options: ["الاعتزاز بالقيادة ورفعة الوطن", "وصف المعارك الحربية", "الحنين إلى الماضي"], ans: 0 }
                     ]
                 }
             ],
@@ -188,7 +196,19 @@
             return JSON.parse(data);
         }
 
-        function saveDB(db) { localStorage.setItem('randa_academy_db', JSON.stringify(db)); updateCounters(); }
+        function saveDB(db) { 
+            localStorage.setItem('randa_academy_db', JSON.stringify(db)); 
+            updateCounters(); 
+        }
+
+        function resetDatabase() {
+            if(confirm('هل تريدين إعادة ضبط الفهرس وحذف الدروس المكررة واستعادة درس العرش يزهو فقط؟')) {
+                localStorage.removeItem('randa_academy_db');
+                updateCounters();
+                alert('تمت استعادة الفهرس النظيف بنجاح! 🌟');
+                location.reload();
+            }
+        }
 
         function openModal(id) { document.getElementById(id).classList.add('show'); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -214,7 +234,7 @@
             const c = document.getElementById('lessonsListContainer');
             
             if(list.length === 0) {
-                c.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 0;"><i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا توجد دروس مضافة بعد. استخدمي زر 'رقمنة الدفتر' لتصوير أول درس!</div>`;
+                c.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 0;"><i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا توجد دروس مضافة بعد. اضغطي على زر 'رقمنة الدفتر' لتصوير أول درس!</div>`;
             } else {
                 c.innerHTML = list.map(l => `
                     <div class="lesson-item-btn" onclick="openLessonViewer('${subKey}', ${l.id})">
@@ -237,7 +257,7 @@
             currentOpenLessonText = lesson.content;
             document.getElementById('viewLessonTitle').innerText = lesson.title;
             document.getElementById('viewLessonDate').innerText = `${subjectNames[subKey]} | ${lesson.date}`;
-            document.getElementById('viewLessonBody').innerHTML = lesson.content.replace(/\n/g, '<br>');
+            document.getElementById('viewLessonBody').innerHTML = lesson.content;
             
             const qContainer = document.getElementById('viewLessonQuiz');
             if(lesson.quiz && lesson.quiz.length > 0) {
@@ -269,20 +289,22 @@
             }
         }
 
-        // رادار التوقعات الحصري لنص الدرس المفتوح فقط
         async function launchViewerRadar() {
             const apiKey = localStorage.getItem('randa_gemini_key');
             if(!apiKey) return alert('يرجى حفظ المفتاح من الإعدادات أولاً!');
-            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس حصرياً...');
+            showLoading('🎯 رادار التوقعات يحلل محتوى الدرس بدقة أكاديمية...');
             
-            const prompt = `أنت رادار امتحانات خبير لطالبة متميزة في الصف التاسع اسمها رندة.
-            هذا هو محتوى درسها الحصري:
-            """${currentOpenLessonText}"""
-            استخرج 3 أسئلة متوقعة بقوة من صلب هذا الدرس فقط:
-            🔴 [سؤال وزاري حتمي]
-            🟡 [كمين امتحاني / خدعة]
-            🟢 [سؤال مضمون]
-            مع الإجابة النموذجية، بأسلوب مشجع ومختصر (استخدم <b> و <br>).`;
+            const prompt = `أنت رادار امتحانات خبير متخصص في المنهاج الفلسطيني للصف التاسع، ومساعد للطالبة رندة.
+محتوى الدرس المدرسي الحصري:
+"""${currentOpenLessonText.replace(/<[^>]*>?/gm, ' ')}"""
+
+المهمة:
+حلل هذا المحتوى بدقة واستخرج 3 أسئلة امتحانية نموذجية مع إجاباتها الكاملة وفق المعايير الوزارية:
+🔴 [سؤال وزاري حتمي]: يختبر الفهم العميق والتحليل.
+🟡 [كمين امتحاني / فكرة دقيقة]: يركز على نقطة يسهو عنها الطلاب مع كشف طريقة الإجابة الصحيحة.
+🟢 [سؤال مباشر ومضمون]: يختبر الحقائق والمفاهيم الأساسية.
+
+التنسيق: اجعل الإجابة مشجعة ومنظمة، واستخدم HTML بسيط (<b> و <br>) بدون أي وسوم كود.`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
@@ -296,46 +318,56 @@
                 openModal('radarModal');
             } catch(e) {
                 hideLoading();
-                alert('فشل الرادار: ' + e.message);
+                alert('فشل تشغيل الرادار: ' + e.message);
             }
         }
 
-        // المسح الذكي والفهرسة التلقائية
         function triggerScan() {
-            if(!localStorage.getItem('randa_gemini_key')) { openModal('settingsModal'); return alert('فعّلي المفتاح أولاً!'); }
-            document.getElementById('cameraInput').click();
+            if(!localStorage.getItem('randa_gemini_key')) { 
+                openModal('settingsModal'); 
+                return alert('يرجى إدخال مفتاح الذكاء الاصطناعي أولاً!'); 
+            }
+            const cam = document.getElementById('cameraInput');
+            cam.value = '';
+            cam.click();
         }
 
         document.getElementById('cameraInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return; // حماية كاملة ضد الإلغاء ومنع إنشاء أي درس وهمي
+
             const apiKey = localStorage.getItem('randa_gemini_key');
-            showLoading('🛰️ جارٍ استخراج خط اليد وتصنيف المادة وصناعة الأسئلة...');
+            showLoading('🛰️ جارٍ استخراج خط اليد وتحليله أكاديمياً وإنشاء الأسئلة...');
 
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const img = new Image();
                 img.onload = async () => {
                     const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height, max = 1200;
+                    let w = img.width, h = img.height, max = 1400;
                     if(w > max || h > max) {
                         if(w > h) { h = Math.round((h*max)/w); w = max; }
                         else { w = Math.round((w*max)/h); h = max; }
                     }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                    const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
 
-                    const prompt = `أنت نظام أرشفة مدرسي ذكي لطالبة صف تاسع (رندة). اقرأ النص المكتوب بخط اليد من صورة دفترها، وصنفه، ثم أرجع النتيجة فقط بصيغة JSON خام بدون أي علامات markdown:
-                    {
-                        "subject": "arabic أو science أو math أو social",
-                        "title": "عنوان الدرس المستخرج من الصفحة",
-                        "content": "ملخص مرتب ومصحح إملائياً للنص",
-                        "quiz": [
-                            {"q": "نص السؤال 1 من صلب الدرس", "options": ["خيار1", "خيار2", "خيار3"], "ans": 0},
-                            {"q": "نص السؤال 2", "options": ["خيار1", "خيار2", "خيار3"], "ans": 1}
-                        ]
-                    }`;
+                    const prompt = `أنت معلم خبير في المنهاج الفلسطيني ومساعد دراسي ذكي للطالبة رندة (الصف التاسع).
+اقرأ صورة الدفتر المكتوبة بخط اليد بدقة واستخرج محتواها التعليمي كاملاً.
+ممنوع الاختصار المخل! إذا كانت المادة لغة عربية، استخرج: الفكرة العامة، معاني الكلمات بالجدول، الصور الفنية، وأهم القواعد. وإذا كانت علوماً أو رياضيات استخرج القوانين، الشرح التفصيلي، والأمثلة المحلولة.
+
+صغ المخرجات بصيغة JSON خام فقط دون أي كود Markdown (\`\`\`json أو \`\`\`):
+{
+  "subject": "arabic أو science أو math أو social",
+  "title": "عنوان الدرس الدقيق كما بالدفتر",
+  "content": "شرح دراسي مفصل وغني ومنسق بوسوم HTML مثل <b> و <br> و <ul> ليساعد على الدراسة الكاملة",
+  "quiz": [
+    {"q": "سؤال امتحاني دقيق رقم 1", "options": ["خيار1", "خيار2", "خيار3"], "ans": 0},
+    {"q": "سؤال امتحاني دقيق رقم 2", "options": ["خيار1", "خيار2", "خيار3"], "ans": 1},
+    {"q": "سؤال امتحاني دقيق رقم 3", "options": ["خيار1", "خيار2", "خيار3"], "ans": 0}
+  ]
+}`;
 
                     try {
                         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`, {
@@ -348,23 +380,23 @@
                         const parsed = JSON.parse(raw);
 
                         const db = getDB();
-                        const targetSub = parsed.subject || 'arabic';
+                        const targetSub = (parsed.subject && db[parsed.subject]) ? parsed.subject : 'arabic';
                         const newLesson = {
                             id: Date.now(),
-                            title: parsed.title || "درس جديد",
+                            title: parsed.title || "درس جديد بدون عنوان",
                             date: new Date().toLocaleDateString('ar-EG'),
-                            content: parsed.content || "",
+                            content: parsed.content || "لا يوجد محتوى مستخرج.",
                             quiz: parsed.quiz || []
                         };
 
                         db[targetSub].unshift(newLesson);
                         saveDB(db);
                         hideLoading();
-                        alert(`✨ تم بنجاح!\nتمت فهرسة درس (${newLesson.title}) تلقائياً داخل مادة: ${subjectNames[targetSub]}`);
+                        alert(`✨ تم التحليل بنجاح!\nتمت أرشفة درس (${newLesson.title}) بشرحه الكامل وأسئلته التفاعلية داخل مادة: ${subjectNames[targetSub]}`);
                         openSubjectDrawer(targetSub);
                     } catch(err) {
                         hideLoading();
-                        alert('حدث خطأ في قراءة وفهرسة الصفحة: ' + err.message);
+                        alert('حدث خطأ أثناء معالجة الصفحة: ' + err.message);
                     }
                 };
                 img.src = evt.target.result;
