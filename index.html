@@ -22,8 +22,15 @@
         .container { width: 90%; max-width: 800px; z-index: 1; padding-top: 25px; padding-bottom: 50px; }
         .header-glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 20px; text-align: center; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); margin-bottom: 18px; position: relative; }
         
-        .cloud-badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; color: var(--text-muted); }
+        /* شارات الحالة المتقابلة في أعلى الهيدر */
+        .cloud-badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.45); border: 1px solid var(--glass-border); padding: 5px 11px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); }
         .cloud-badge.online { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); }
+
+        .key-badge { position: absolute; top: 15px; right: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.45); border: 1px solid var(--glass-border); padding: 5px 11px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; }
+        .key-badge:hover { transform: scale(1.05); }
+        .key-badge.active { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); box-shadow: 0 0 10px rgba(74, 222, 128, 0.15); }
+        .key-badge.missing { color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); }
+        .key-badge.expired { color: #f87171; border-color: rgba(248, 113, 113, 0.4); box-shadow: 0 0 10px rgba(248, 113, 113, 0.2); }
 
         .vip-badge { background: linear-gradient(135deg, #d4af37, #aa771c); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; box-shadow: 0 0 15px var(--gold-glow); }
         .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--gold); margin: 0 auto 15px; display: block; box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); object-fit: cover; cursor: pointer; transition: 0.3s; }
@@ -61,7 +68,6 @@
         .broadcast-edit-btn { background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); border-radius: 8px; padding: 5px 11px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; font-family: 'Tajawal'; font-weight: bold; }
         .broadcast-edit-btn:hover { background: var(--gold); color: #000; }
 
-        /* خانة ملاحظة رندة المستقلة والملفتة */
         .randa-special-container {
             margin-top: 12px;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
@@ -90,11 +96,9 @@
             letter-spacing: 0.5px;
             box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
         }
-        
-        /* نوع الخط المخصص واللون المستقل لملاحظة رندة */
         .randa-note-content {
             font-family: 'Cairo', sans-serif !important;
-            color: #fef08a !important; /* لون ذهبي نيون مشع ومميز */
+            color: #fef08a !important;
             font-size: 1.15rem !important;
             font-weight: 900 !important;
             line-height: 1.7 !important;
@@ -154,14 +158,20 @@
 
     <div class="container">
         <div class="header-glass">
+            <!-- حالة المزامنة السحابية (شمال) -->
             <div id="cloudStatus" class="cloud-badge"><i class="fa-solid fa-cloud"></i> جاري الاتصال...</div>
+            
+            <!-- حالة مفتاح الذكاء الاصطناعي (يمين ومقابلة للسحابة) -->
+            <div id="keyStatusBadge" class="key-badge missing" onclick="openModal('settingsModal')" title="اضغط لإدارة المفتاح">
+                <i class="fa-solid fa-key"></i> المفتاح: جاري الفحص...
+            </div>
+
             <span class="vip-badge">VIP Student</span>
             <img src="assets/icon.png?v=7" alt="Randa" class="profile-pic" onclick="openModal('imageModal')">
             <h1>أكاديمية رندة زربا</h1>
             <p>مدرسة الدوحة - الصف التاسع | المنصة السحابية</p>
         </div>
 
-        <!-- شريط التنبيهات المطور: عبارة ثابتة + خانة مستقلة بخط Cairo ولون نيون مميز -->
         <div class="broadcast-card" id="broadcastCard">
             <div class="broadcast-top-row">
                 <div class="broadcast-fixed-title">
@@ -300,7 +310,7 @@
         <div class="glass-box" style="max-width: 420px; text-align: center;">
             <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
             <h2 style="color: var(--gold); margin-top: 0;"><i class="fa-solid fa-key"></i> إعدادات VIP</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه محلياً.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">أدخلي مفتاح الذكاء الاصطناعي (Gemini) ليتم حفظه واستخدامه في المسح والرادار.</p>
             <input type="password" id="apiKeyInput" style="width: 90%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;" placeholder="AIzaSy...">
             <button class="vip-btn" id="saveKeyBtn" style="width: 100%;" onclick="saveApiKeyDirect()">حفظ المفتاح وتفعيل القوة ⚡</button>
         </div>
@@ -394,6 +404,24 @@
             } else {
                 el.className = 'cloud-badge';
                 el.innerHTML = '<i class="fa-solid fa-cloud"></i> ذاكرة محلية (أوفلاين)';
+            }
+        }
+
+        // تحديث شارة حالة مفتاح الذكاء الاصطناعي (أخضر / رمادي / أحمر)
+        function updateKeyBadge() {
+            const el = document.getElementById('keyStatusBadge');
+            const key = localStorage.getItem('randa_gemini_key');
+            const status = localStorage.getItem('randa_key_status') || 'active';
+
+            if(!key || key.trim() === '') {
+                el.className = 'key-badge missing';
+                el.innerHTML = '<i class="fa-solid fa-key"></i> المفتاح: غير مدخّل ⚪';
+            } else if(status === 'expired') {
+                el.className = 'key-badge expired';
+                el.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> المفتاح: بحاجة لتحديث ⚠️';
+            } else {
+                el.className = 'key-badge active';
+                el.innerHTML = '<i class="fa-solid fa-bolt"></i> المفتاح: شغال ومفعل ⚡';
             }
         }
 
@@ -654,10 +682,15 @@
                             await new Promise(r => setTimeout(r, 1500));
                             continue;
                         }
+                        // إذا نفدت الكوتا أو المفتاح غير صالح يتم تعديل الحالة فوراً لأحمر
+                        localStorage.setItem('randa_key_status', 'expired');
+                        updateKeyBadge();
                         throw new Error(data.error.message);
                     }
 
                     if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                        localStorage.setItem('randa_key_status', 'active');
+                        updateKeyBadge();
                         return data.candidates[0].content.parts[0].text;
                     }
                     throw new Error('لم تصل استجابة واضحة من النموذج');
@@ -666,6 +699,10 @@
                     if (err.message && err.message.includes('high demand') && attempt < maxRetries) {
                         await new Promise(r => setTimeout(r, 1500));
                         continue;
+                    }
+                    if (err.message && (err.message.includes('quota') || err.message.includes('API_KEY_INVALID'))) {
+                        localStorage.setItem('randa_key_status', 'expired');
+                        updateKeyBadge();
                     }
                     throw err;
                 }
@@ -809,7 +846,9 @@ ${existingQuestions}
             const key = document.getElementById('apiKeyInput').value.trim();
             if(!key) return alert('الرجاء إدخال المفتاح أولاً!');
             localStorage.setItem('randa_gemini_key', key);
-            alert('تم حفظ المفتاح بنجاح وتفعيل القوة ⚡');
+            localStorage.setItem('randa_key_status', 'active');
+            updateKeyBadge();
+            alert('تم حفظ المفتاح وتفعيل القوة بنجاح ⚡');
             closeModal('settingsModal');
         }
 
@@ -817,6 +856,8 @@ ${existingQuestions}
             history.replaceState({ step: 'home' }, "");
             const saved = localStorage.getItem('randa_gemini_key');
             if(saved) document.getElementById('apiKeyInput').value = saved;
+            
+            updateKeyBadge();
             await pullFromCloud();
         });
     </script>
